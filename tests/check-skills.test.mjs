@@ -44,3 +44,6 @@ test('cursor terms are reported', () => {
   // frontmatter is 4 lines + body starts with 5 blank lines => first term on line 10
   assert.deepEqual(out, terms.map((t, i) => `skills/x/SKILL.md:${10 + i}: cursor term "${t}"`));
 });
+
+test('placeholder link targets are ignored', () =>
+  assert.deepEqual(checkSkills(skill('name: x\ndescription: d', '[a](url) [b](gone.md)')), ['skills/x/SKILL.md: broken link gone.md']));

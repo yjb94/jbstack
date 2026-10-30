@@ -38,6 +38,7 @@ export function checkSkills(root) {
 
     for (const [, link] of text.matchAll(/\]\(([^)#\s]+)/g)) {
       if (/^[a-z][a-z0-9+.-]*:/i.test(link)) continue; // http:, https:, mailto:
+      if (!/[/.]/.test(link)) continue; // placeholder such as (url)
       if (!fs.existsSync(path.resolve(path.dirname(file), link))) problems.push(`${r}: broken link ${link}`);
     }
 
