@@ -1,0 +1,69 @@
+{
+  "commit": "c742dd6",
+  "skills": [
+    "poteto-mode",
+    "how",
+    "architect",
+    "arena",
+    "swarm",
+    "interrogate",
+    "why",
+    "figure-it-out",
+    "tdd",
+    "show-me-your-work",
+    "benchmark-checklist",
+    "technical-writing",
+    "unslop",
+    "no-comments",
+    "create-verification-skill",
+    "maintain-verification-skill",
+    "principle-attack-the-premise",
+    "principle-boundary-discipline",
+    "principle-build-the-lever",
+    "principle-encode-lessons-in-structure",
+    "principle-exhaust-the-design-space",
+    "principle-experience-first",
+    "principle-explain-the-number",
+    "principle-fix-root-causes",
+    "principle-foundational-thinking",
+    "principle-guard-the-context-window",
+    "principle-laziness-protocol",
+    "principle-make-operations-idempotent",
+    "principle-migrate-callers-then-delete-legacy-apis",
+    "principle-minimize-reader-load",
+    "principle-model-the-domain",
+    "principle-never-block-on-the-human",
+    "principle-outcome-oriented-execution",
+    "principle-prove-it-works",
+    "principle-redesign-from-first-principles",
+    "principle-separate-before-serializing-shared-state",
+    "principle-sequence-verifiable-units",
+    "principle-subtract-before-you-add",
+    "principle-test-behavior-not-implementation",
+    "principle-type-system-discipline"
+  ],
+  "modePlaybooks": [
+    "feature",
+    "bug-fix",
+    "investigation",
+    "babysit",
+    "refactoring",
+    "prototype",
+    "autonomous-run",
+    "authoring-a-skill",
+    "opening-a-pr"
+  ],
+  "agents": [
+    "poteto-agent"
+  ],
+  "extra": [
+    {
+      "from": "cursor-team-kit/skills/deslop",
+      "to": "skills/deslop"
+    },
+    {
+      "from": "cursor-team-kit/LICENSE",
+      "to": "skills/deslop/LICENSE"
+    }
+  ]
+}
