@@ -54,7 +54,8 @@
     "opening-a-pr"
   ],
   "agents": [
-    "poteto-agent"
+    "poteto-agent",
+    "comment-sicko"
   ],
   "extra": [
     {
