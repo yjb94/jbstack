@@ -1,14 +1,14 @@
 ---
-name: poteto-mode
-description: poteto's agent style for concise, detailed responses, deliberate subagents, unslopped prose, simple code, and verified work. Use for poteto, /poteto-mode, or requests to work in this style.
+name: jb-mode
+description: jaybe's agent style for concise, detailed responses, deliberate subagents, unslopped prose, simple code, and verified work. Use for JB, /jb-mode, or requests to work in this style.
 disable-model-invocation: true
 icon: crown
 color: yellow
 ---
 
-# Poteto mode
+# JB mode
 
-Bundled skills live at `../<name>/SKILL.md` from this file, so put this file's absolute path in every `poteto-agent` prompt.
+Bundled skills live at `../<name>/SKILL.md` from this file, so put this file's absolute path in every `jb-agent` prompt.
 
 ## Non-negotiables
 
@@ -91,9 +91,9 @@ Read the leaf skill in full for any principle you apply. Each entry names when i
 
 ## Subagents
 
-**Use `subagent_type: "poteto-agent"` for any subagent you spawn inside a playbook step** (code-writing delegates, ad-hoc helpers). The chat that receives `/poteto-mode` runs the playbook. Never spawn a `poteto-agent` to run the playbook itself. Routed workflow skills (`how`, `why`, `interrogate`, `reflect`, `swarm`) set their own `subagent_type` for diverse-model review. Respect what the skill prescribes, don't override to `poteto-agent`.
+**Use `subagent_type: "jbstack:jb-agent"` for any subagent you spawn inside a playbook step** (code-writing delegates, ad-hoc helpers). The chat that receives `/jb-mode` runs the playbook. Never spawn a `jb-agent` to run the playbook itself. Routed workflow skills (`how`, `why`, `interrogate`, `reflect`, `swarm`) set their own `subagent_type` for diverse-model review. Respect what the skill prescribes, don't override to `jb-agent`.
 
-**Defaults for every `Agent` call.** Omit `run_in_background`, because subagents run in the background by default and notify you when they finish (a steer of a running agent too, because a foreground call holds your turn while other reports wait). Use a writable agent, not `Explore` (`general-purpose` and `poteto-agent` keep the session's MCP servers), file pointers not inlined context, and an explicit model per role: `model: "sonnet"` for code, `model: "opus"` with `effort: "xhigh"` for prose and judgment. Code delegates tier by difficulty. The hardest changes (cross-cutting design, gnarly concurrency, subtle algorithms) go to `model: "opus"` with `effort: "xhigh"`, whether the task needs judgment on vague intent or is a precisely specified sequence of steps to execute to the letter. Trivial mechanical edits go to `model: "sonnet"`. Each code playbook delegates on `model: "sonnet"`, and the hardest changes use `model: "opus"` with `effort: "xhigh"`. Prose and judgment use `model: "opus"` with `effort: "xhigh"`.
+**Defaults for every `Agent` call.** Omit `run_in_background`, because subagents run in the background by default and notify you when they finish (a steer of a running agent too, because a foreground call holds your turn while other reports wait). Use a writable agent, not `Explore` (`general-purpose` and `jb-agent` keep the session's MCP servers), file pointers not inlined context, and an explicit model per role: `model: "sonnet"` for code, `model: "opus"` with `effort: "xhigh"` for prose and judgment. Code delegates tier by difficulty. The hardest changes (cross-cutting design, gnarly concurrency, subtle algorithms) go to `model: "opus"` with `effort: "xhigh"`, whether the task needs judgment on vague intent or is a precisely specified sequence of steps to execute to the letter. Trivial mechanical edits go to `model: "sonnet"`. Each code playbook delegates on `model: "sonnet"`, and the hardest changes use `model: "opus"` with `effort: "xhigh"`. Prose and judgment use `model: "opus"` with `effort: "xhigh"`.
 
 **Match the model to the job.** Before each spawn, start from the role's model and pick the reasoning level the job needs. Roles on `opus` start at `effort: "xhigh"`. Raise it one step, up to `max`, for the hardest or subtlest work. Lower it one step for judgment and two or more steps for routine work. Verification is the exception and stays on `model: "sonnet"`. Change only the effort level and keep the model the role names. If the `Agent` tool rejects the adjusted effort, use the role's own value and say so. If it rejects that too, continue with the calling skill's fallback. When the calling skill has no fallback, omit `model` so the subagent runs on the session model, and say so.
 
