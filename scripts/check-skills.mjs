@@ -15,7 +15,7 @@ const TERMS = [
 
 const walk = (dir) =>
   !fs.existsSync(dir) ? [] : fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
-    e.isDirectory() ? walk(path.join(dir, e.name)) : e.name.endsWith('.md') ? [path.join(dir, e.name)] : []);
+    e.isDirectory() ? (e.name === 'node_modules' ? [] : walk(path.join(dir, e.name))) : e.name.endsWith('.md') ? [path.join(dir, e.name)] : []);
 
 export function checkSkills(root) {
   const problems = [];

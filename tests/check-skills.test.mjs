@@ -47,3 +47,10 @@ test('cursor terms are reported', () => {
 
 test('placeholder link targets are ignored', () =>
   assert.deepEqual(checkSkills(skill('name: x\ndescription: d', '[a](url) [b](gone.md)')), ['skills/x/SKILL.md: broken link gone.md']));
+
+test('node_modules is skipped', () => {
+  const root = skill('name: x\ndescription: d');
+  fs.mkdirSync(path.join(root, 'skills/x/node_modules/pkg'), { recursive: true });
+  fs.writeFileSync(path.join(root, 'skills/x/node_modules/pkg/README.md'), 'uses Cursor [g](gone.md)\n');
+  assert.deepEqual(checkSkills(root), []);
+});
