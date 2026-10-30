@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { decide } from './guard.mjs';
+import { decide, decideFileWrite } from './guard.mjs';
 import { writeVerdict } from '../scripts/write-verdict.mjs';
 
 const GUARD = fileURLToPath(new URL('./guard.mjs', import.meta.url));
@@ -187,4 +187,53 @@ test('malformed verdict is blocked', () => {
     assert.equal(d.allow, false, body);
     assert.match(d.reason, /malformed|no verdict found/, body);
   }
+});
+
+test('block reason does not reveal how to raise trust', () => {
+  const r = mkRepo(1);
+  const d = decide({ command: 'git push', cwd: r });
+  assert.equal(d.allow, false);
+  assert.match(d.reason, /level 1/);
+  assert.match(d.reason, /needs level 2/);
+  assert.match(d.reason, /set by the repo owner\. Report instead of retrying/);
+  assert.doesNotMatch(d.reason, /jb\.local|\.claude|"trust"|\{/);
+});
+
+test('bash command touching jb.local.json is blocked', () => {
+  const r = mkRepo(1);
+  for (const command of [`echo '{"trust":2}' > ${r}/.claude/jb.local.json`, 'sed -i s/1/2/ .claude/jb.local.json', 'cat .claude/jb.local.json']) {
+    const d = decide({ command, cwd: r });
+    assert.equal(d.allow, false, command);
+    assert.doesNotMatch(d.reason, /\{/);
+  }
+});
+
+test('Write to .claude/jb.local.json is blocked', () => {
+  const r = mkRepo(1);
+  assert.equal(decideFileWrite({ filePath: path.join(r, '.claude', 'jb.local.json') }).allow, false);
+  assert.equal(decideFileWrite({ filePath: path.join(r, 'sub', '..', '.claude', 'jb.local.json') }).allow, false);
+  const run = (tool_name, tool_input) =>
+    spawnSync('node', [GUARD], { input: JSON.stringify({ tool_name, tool_input, cwd: r }), encoding: 'utf8' });
+  for (const [name, input] of [
+    ['Write', { file_path: path.join(r, '.claude', 'jb.local.json') }],
+    ['Edit', { file_path: '.claude/jb.local.json' }],
+    ['MultiEdit', { file_path: path.join(r, '.claude', 'jb.local.json') }],
+    ['NotebookEdit', { notebook_path: path.join(r, '.claude', 'jb.local.json') }],
+  ]) {
+    const out = run(name, input);
+    assert.equal(out.status, 2, name);
+    assert.doesNotMatch(out.stderr, /\{/);
+  }
+});
+
+test('Write elsewhere is allowed', () => {
+  const r = mkRepo(1);
+  assert.equal(decideFileWrite({ filePath: path.join(r, 'src', 'a.js') }).allow, true);
+  assert.equal(decideFileWrite({ filePath: path.join(r, '.claude', 'settings.json') }).allow, true);
+  assert.equal(decideFileWrite({ filePath: undefined }).allow, true);
+  const out = spawnSync('node', [GUARD], {
+    input: JSON.stringify({ tool_name: 'Write', tool_input: { file_path: path.join(r, 'a.js') }, cwd: r }),
+    encoding: 'utf8',
+  });
+  assert.equal(out.status, 0);
 });

@@ -65,7 +65,17 @@ export function checkVerdict(repoTop) {
   return { ok: true };
 }
 
+const TRUST_FILE = /(^|[\\/])\.claude[\\/]jb\.local\.json$/;
+const OWNER_ONLY = 'The trust level is set by the repo owner. Report instead of retrying.';
+const protect = () => ({ allow: false, reason: `jbstack trust: the trust configuration is not yours to change. ${OWNER_ONLY}` });
+
+// Write/Edit/MultiEdit/NotebookEdit: only the trust file is guarded
+export function decideFileWrite({ filePath }) {
+  return typeof filePath === 'string' && TRUST_FILE.test(path.normalize(filePath)) ? protect() : { allow: true };
+}
+
 export function decide({ command, cwd }) {
+  if (command.includes('jb.local.json')) return protect();
   const commit = /\bgit\s+(?:-C\s+\S+\s+)?commit\b/.test(command);
   const push = /\bgit\s+(?:-C\s+\S+\s+)?push\b/.test(command);
   const pr = /\bgh\s+pr\s+create\b/.test(command);
@@ -75,7 +85,7 @@ export function decide({ command, cwd }) {
   const level = trustLevel(repo);
   const block = (what, need) => ({
     allow: false,
-    reason: `jbstack trust: ${what} is blocked in ${repo} at trust level ${level} (needs level ${need}+). Set {"trust":${need}} in ${path.join(repo, '.claude', 'jb.local.json')} to allow it.`,
+    reason: `jbstack trust: ${what} is blocked in ${repo} at trust level ${level} (needs level ${need}+). ${OWNER_ONLY}`,
   });
   if (commit && level < 1) return block('git commit', 1);
   if (push && level < 2) return block('git push', 2);
@@ -94,9 +104,10 @@ function main() {
   } catch {
     process.exit(0); // unparseable hook input: do not wedge the session
   }
-  const command = input?.tool_input?.command;
-  if (typeof command !== 'string') process.exit(0);
-  const d = decide({ command, cwd: input.cwd || process.cwd() });
+  const ti = input?.tool_input;
+  let d = { allow: true };
+  if (typeof ti?.command === 'string') d = decide({ command: ti.command, cwd: input.cwd || process.cwd() });
+  else if (/^(Write|Edit|MultiEdit|NotebookEdit)$/.test(input?.tool_name)) d = decideFileWrite({ filePath: ti?.file_path ?? ti?.notebook_path });
   if (d.allow) process.exit(0);
   process.stderr.write(d.reason + '\n');
   process.exit(2);

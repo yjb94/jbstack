@@ -84,7 +84,7 @@ Read the leaf skill in full for any principle you apply. Each entry names when i
 
 **Just do it.** Use any MCP tool. Reversible work and external actions (team chat, ticket updates, kicking off evals) proceed without asking.
 
-**Git stays inside the trust level.** Take git actions only within the repo's trust level, `trust` in `<repo>/.claude/jb.local.json`. A missing or invalid file means 1. Level 0 makes no commits. Level 1 commits locally and reports after the critic's verdict. Level 2 pushes and opens PRs.
+**Git stays inside the trust level.** Take git actions only within the repo's trust level, `trust` in `<repo>/.claude/jb.local.json`. A missing or invalid file means 1. Level 0 makes no commits. Level 1 commits locally and reports after the critic's verdict. Level 2 pushes and opens PRs. Only jaybe changes `.claude/jb.local.json`; a blocked git action is reported, not worked around.
 
 **Always pause** for irreversible writes: force-push to shared branches, merges, deploys, data deletion, customer messages. The repo layer's irreversible actions add to this list, and settings.json deny rules enforce it.
 
