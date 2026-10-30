@@ -33,10 +33,11 @@ export function targetRepo(command, cwd) {
   return topOf(cwd);
 }
 
-// missing, unreadable, invalid or out-of-range config -> 1
+// missing, unreadable, invalid or out-of-range config -> 1. Read from the main checkout so a worktree shares its level.
 export function trustLevel(repoTop) {
   try {
-    const { trust } = JSON.parse(fs.readFileSync(path.join(repoTop, '.claude', 'jb.local.json'), 'utf8'));
+    const common = execFileSync('git', ['rev-parse', '--path-format=absolute', '--git-common-dir'], { cwd: repoTop, stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim();
+    const { trust } = JSON.parse(fs.readFileSync(path.join(path.dirname(common), '.claude', 'jb.local.json'), 'utf8'));
     return trust === 0 || trust === 1 || trust === 2 ? trust : 1;
   } catch {
     return 1;

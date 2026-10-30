@@ -237,3 +237,14 @@ test('Write elsewhere is allowed', () => {
   });
   assert.equal(out.status, 0);
 });
+
+test("worktree inherits the main checkout's level", () => {
+  for (const [trust, pushAllowed, commitAllowed] of [[2, true, true], [0, false, false]]) {
+    const r = mkPrRepo();
+    fs.writeFileSync(path.join(r, '.claude/jb.local.json'), JSON.stringify({ trust }));
+    const wt = `${r}-wt`;
+    git(r, 'worktree', 'add', '-q', '-b', 'wt', wt);
+    assert.equal(decide({ command: 'git push', cwd: wt }).allow, pushAllowed, `level ${trust} push`);
+    assert.equal(decide({ command: 'git commit -m x', cwd: wt }).allow, commitAllowed, `level ${trust} commit`);
+  }
+});
