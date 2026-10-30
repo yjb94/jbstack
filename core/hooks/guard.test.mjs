@@ -95,3 +95,24 @@ test('main: exit 2 with reason on stderr when blocked, exit 0 when allowed', () 
   assert.match(blocked.stderr, /level 1/);
   assert.equal(run('git status').status, 0);
 });
+
+test('cd ~/ and $HOME/ targets are expanded; missing target falls back to cwd', () => {
+  const one = mkRepo(1);
+  const home = path.join(tmp, 'home');
+  fs.mkdirSync(home);
+  const two = path.join(home, 'two');
+  fs.mkdirSync(two);
+  git(two, 'init', '-q');
+  fs.mkdirSync(path.join(two, '.claude'));
+  fs.writeFileSync(path.join(two, '.claude/jb.local.json'), '{"trust":2}');
+  const saved = process.env.HOME;
+  process.env.HOME = home; // os.homedir() reads HOME on POSIX
+  try {
+    for (const p of ['~/two', '$HOME/two', '${HOME}/two'])
+      assert.equal(decide({ command: `cd ${p} && git push`, cwd: one }).allow, true, p);
+    assert.equal(decide({ command: 'cd ~/nope && git push', cwd: one }).allow, false);
+    assert.equal(decide({ command: `cd ${home} && git push`, cwd: one }).allow, true);
+  } finally {
+    process.env.HOME = saved;
+  }
+});

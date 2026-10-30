@@ -1,6 +1,7 @@
 // ponytail: regex parse of the command; subshells, aliases and env-var indirection slip through. It is a seatbelt, not a sandbox.
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -16,12 +17,19 @@ function topOf(dir) {
   }
 }
 
+const expand = (d) => d.replace(/^(?:~|\$HOME|\$\{HOME\})(?=\/|$)/, os.homedir());
+
 // first `git -C <dir>`, then a leading `cd <dir> &&`, then cwd
 export function targetRepo(command, cwd) {
   const c = command.match(/\bgit\s+-C\s+(\S+)/);
   const cd = command.match(/^\s*cd\s+(\S+)\s*&&/);
-  const dir = c ? unquote(c[1]) : cd ? unquote(cd[1]) : '.';
-  return topOf(path.resolve(cwd, dir));
+  const raw = c ? c[1] : cd ? cd[1] : null;
+  if (raw) {
+    const dir = path.resolve(cwd, expand(unquote(raw)));
+    // an existing non-repo dir is outside git; a missing dir falls back to cwd rather than slipping through
+    if (fs.existsSync(dir)) return topOf(dir);
+  }
+  return topOf(cwd);
 }
 
 // missing, unreadable, invalid or out-of-range config -> 1
