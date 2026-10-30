@@ -173,3 +173,14 @@ test('inconclusive items do not block a PASS', () => {
   verdict(r, 'PASS', ['could not run e2e']);
   assert.equal(pr(r).allow, true);
 });
+
+test('malformed verdict is blocked', () => {
+  const r = mkPrRepo();
+  const file = verdict(r, 'PASS');
+  for (const body of ['null', '[]', '7', '"x"', '{not json']) {
+    fs.writeFileSync(file, body);
+    const d = pr(r);
+    assert.equal(d.allow, false, body);
+    assert.match(d.reason, /malformed|no verdict found/, body);
+  }
+});

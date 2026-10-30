@@ -58,6 +58,8 @@ export function checkVerdict(repoTop) {
   } catch {
     return no('no verdict found; run the critic on the pushed commit, then retry gh pr create.');
   }
+  if (!v || typeof v !== 'object' || Array.isArray(v))
+    return no('verdict file is malformed (not a JSON object); run the critic again to rewrite it.');
   if (v.result !== 'PASS') return no('last verdict is FAIL; fix the findings, push, and run the critic again.');
   if (v.tree !== upstream) return no('verdict is stale (it covers a different tree than the pushed branch); run the critic again on the pushed commit.');
   return { ok: true };
