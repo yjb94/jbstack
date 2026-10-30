@@ -1,14 +1,14 @@
 ### Prototype
 
-**You own the design decision, not the code. The prototype is a throwaway instrument. The real build follows Feature.**
+**코드가 아니라 설계 결정을 네가 책임진다. 프로토타입은 일회용 도구다. 실제 빌드는 Feature를 따른다.**
 
-The one playbook where the Laziness Protocol's "smallest change" and the verification bar invert. Speed over polish, code quality does not matter, no planning. The rigor is in picking the right design cheaply. Propose variations the user didn't ask for, throw an approach away and try another.
+Laziness Protocol의 "가장 작은 변경"과 검증 기준이 뒤집히는 유일한 playbook이다. 완성도보다 속도, 코드 품질은 상관없고, 계획도 없다. 엄밀함은 맞는 설계를 싸게 고르는 데 있다. 사용자가 요청하지 않은 변형도 제안하고, 한 접근을 버리고 다른 접근을 시도한다.
 
-1. Scope the decision the prototype exists to make: which layout, which interaction, which density, or for an empirical fork which behavior, timing, or approach. No decision means no prototype. Route to Feature.
-2. Gather references when the design space is open. Search for prior art, summarize a moodboard of themes, palettes, and layouts, let the user pick directions before building. Skip when the direction is set.
-3. Build throwaway in an isolated scratch dir, separate from production source. For a visual decision, vanilla HTML/CSS/JS or the lightest stack that renders the idea, CDN deps, a dev server with hot reload. For a behavioral or timing decision, the smallest script that exercises the question. For behavior HTML cannot reproduce (keyboard, gestures, native modules), a dev-only screen inside the app. No production framework, no tests, no abstractions.
-4. When comparing alternatives, build them behind one switcher (buttons or a keypress), each variant labeled. This is the **exhaust-the-design-space** principle skill made cheap.
-5. Verify on the matching surface, on iOS and Android. For a visual decision, screenshot each variant via the repo's `verify-<app>` skill and drive the interaction. For a behavioral or timing decision, observe the thing you are deciding by logging the timing, printing the output, or watching the render. The observation is the test here, not an assertion.
-6. Present alternatives, tradeoffs, and a recommendation. The output is the decision plus the throwaway artifact, not shippable code. Hand the chosen direction to **Feature** (or `architect` for the shape) for the real build.
+1. 프로토타입이 내려야 할 결정의 범위를 정한다: 어떤 레이아웃, 어떤 상호작용, 어떤 밀도, 또는 경험적 갈림길이면 어떤 동작, 타이밍, 접근. 결정이 없으면 프로토타입도 없다. Feature로 보낸다.
+2. 설계 공간이 열려 있으면 참고 자료를 모은다. 선행 사례를 찾고, 테마, 팔레트, 레이아웃의 무드보드를 요약하고, 빌드 전에 사용자가 방향을 고르게 한다. 방향이 정해져 있으면 건너뛴다.
+3. 프로덕션 소스와 분리된 격리된 scratch 디렉터리에서 일회용으로 만든다. 시각적 결정에는 vanilla HTML/CSS/JS나 아이디어를 그려 내는 가장 가벼운 스택, CDN 의존성, hot reload 되는 개발 서버. 동작이나 타이밍 결정에는 그 질문을 실행해 보는 가장 작은 스크립트. HTML로 재현할 수 없는 동작(키보드, 제스처, 네이티브 모듈)에는 앱 안의 개발 전용 화면. 프로덕션 프레임워크도, 테스트도, 추상화도 없다.
+4. 대안을 비교할 때는 하나의 전환 장치(버튼이나 키 입력) 뒤에 만들고, 변형마다 이름표를 붙인다. 이것이 **exhaust-the-design-space** 원칙 스킬을 싸게 적용한 것이다.
+5. 맞는 표면에서, iOS와 Android 모두에서 검증한다. 시각적 결정이면 레포의 `verify-<app>` 스킬로 변형마다 스크린샷을 찍고 상호작용을 몰아 본다. 동작이나 타이밍 결정이면 결정하려는 대상을 관찰한다. 타이밍을 로그로 남기거나, 출력을 찍거나, 렌더링을 지켜본다. 여기서는 assertion이 아니라 관찰이 테스트다.
+6. 대안, tradeoff, 권고를 제시한다. 출력은 결정과 일회용 산출물이지, 내보낼 코드가 아니다. 고른 방향을 실제 빌드를 위해 **Feature**(형태는 `architect`)로 넘긴다.
 
-**Reply:** the variants explored, the evidence (screenshots for a visual decision, the observed output or timing for a behavioral one), tradeoffs, your recommendation, and the scratch path. Say plainly that the prototype is throwaway.
+**회신:** 탐색한 변형, 증거(시각적 결정이면 스크린샷, 동작 결정이면 관찰한 출력이나 타이밍), tradeoff, 권고, scratch 경로. 프로토타입은 일회용이라고 분명히 말한다.

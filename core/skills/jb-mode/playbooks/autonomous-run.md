@@ -1,13 +1,13 @@
 ### Autonomous run
 
-**You own the exit condition. Define done, then drive to it without stopping.**
+**종료 조건은 네가 책임진다. 완료를 정의하고, 멈추지 않고 그곳까지 몰고 간다.**
 
-1. State the exit condition as a checkable predicate before the first iteration (tests green, repro fixed, all N PRs merged, pixel-diff zero).
-2. Pick the wake mechanism using the `/loop` command (a built-in, not a pstack skill). An event to watch (CI, a merge, a ref advancing) gets the Monitor tool or a watcher subagent that wakes you on the event, with a long time-based heartbeat as fallback. No event gets a fixed-interval heartbeat sized to when the result is worth re-checking. Pick each subagent's reasoning level for the job, per the Subagents section.
-3. Each iteration makes the smallest change the evidence justifies, verifies it against the predicate, commits if it advanced, discards changes that didn't help. Belt-and-suspenders that "might help" gets reverted, not left to ride.
-   Sequence the work via the **sequence-verifiable-units** principle skill, verifying each unit before the next instead of batching checks at the end.
-4. Mid-run discoveries that support the goal are yours. Address broken skills, related bugs, flaky verifiers, review noise, tooling failures, orphaned follow-ups, and fixable drift yourself via jb-mode. Put out-of-band fixes in their own PR. Stay inside each repo's trust level. At level 1, commit locally and report instead of pushing. Do not park reversible work for the human or use `AskUserQuestion`. Surface only irreversible actions, genuine product or preference calls no experiment can settle, or a real dead end. Keep the predicate as the main drive, and return to it after each side fix.
-5. Checkpoint every iteration via the **show-me-your-work** skill, a row for what changed and whether the predicate moved.
-6. Stop when the predicate is met. A plateau is not a stop, so keep going and pivot your approach to push past it. Surface a genuine dead end rather than spinning, and never relax the predicate to declare victory.
+1. 첫 반복 전에 종료 조건을 확인 가능한 술어로 적는다(테스트 통과, 재현 해결, N개 PR 모두 머지, 픽셀 diff 0).
+2. `/loop` 명령(pstack 스킬이 아닌 내장 명령)으로 깨우는 방식을 고른다. 지켜볼 이벤트(CI, 머지, ref 전진)가 있으면 Monitor 도구나, 그 이벤트에 너를 깨우는 감시 서브에이전트를 쓰고, 긴 시간 기반 heartbeat를 대비책으로 둔다. 이벤트가 없으면 결과를 다시 확인할 가치가 생기는 시점에 맞춘 고정 간격 heartbeat를 쓴다. Subagents 절에 따라 서브에이전트마다 작업에 맞는 추론 수준을 고른다.
+3. 반복마다 증거가 정당화하는 가장 작은 변경을 하고, 술어에 대해 검증하고, 진전이 있으면 커밋하고, 도움이 안 된 변경은 버린다. "도움이 될지도 모르는" 이중 안전장치는 남겨 두지 않고 되돌린다.
+   **sequence-verifiable-units** 원칙 스킬로 작업 순서를 정하고, 확인을 끝에 몰아서 하지 않고 단위마다 검증한 뒤 다음으로 넘어간다.
+4. 실행 도중 발견한 것 중 목표를 돕는 것은 네 몫이다. 고장 난 스킬, 관련 버그, 불안정한 검증기, 리뷰 잡음, 도구 실패, 방치된 후속 작업, 고칠 수 있는 drift는 jb-mode로 직접 처리한다. 본 작업 밖의 수정은 별도 PR로 낸다. 각 레포의 신뢰 단계 안에 머문다. 신뢰 단계 1에서는 push하지 않고 로컬에 커밋하고 보고한다. 되돌릴 수 있는 작업을 사람에게 미뤄 두지 않고, `AskUserQuestion`을 쓰지 않는다. 되돌릴 수 없는 행동, 어떤 실험으로도 결론 낼 수 없는 진짜 제품·선호 판단, 진짜 막다른 길만 드러낸다. 술어를 주된 동력으로 유지하고, 곁가지 수정이 끝날 때마다 술어로 돌아간다.
+5. 반복마다 **show-me-your-work** 스킬로 체크포인트를 남긴다. 무엇이 바뀌었고 술어가 움직였는지를 한 행으로 적는다.
+6. 술어가 충족되면 멈춘다. 정체는 멈출 이유가 아니므로 계속 가고, 접근을 바꿔 정체를 넘어선다. 헛돌지 말고 진짜 막다른 길은 드러낸다. 승리를 선언하려고 술어를 절대 느슨하게 하지 않는다.
 
-**Reply:** the exit condition, iterations run, what landed, what was discarded, final predicate state.
+**회신:** 종료 조건, 돌린 반복, 반영된 것, 버린 것, 최종 술어 상태.

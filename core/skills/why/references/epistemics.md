@@ -1,71 +1,71 @@
 # Epistemics
 
-How to reason about confidence when evidence is historical, fragmentary, and sometimes contradictory, and how to tell the user without flattening it into false certainty. Code shows what it does, not *why it exists*. The why lives in commits, PRs, tickets, docs, and conversations, all incomplete, biased, and sometimes missing. Pretending otherwise produces confident-sounding guesses that mislead the user.
+증거가 과거의 것이고, 단편적이고, 때로는 서로 모순될 때 신뢰도를 어떻게 따지는지, 그리고 그것을 거짓된 확실성으로 뭉개지 않고 사용자에게 어떻게 전하는지를 다룬다. 코드는 무엇을 하는지는 보여 주지만 *왜 존재하는지*는 보여 주지 않는다. why는 커밋, PR, 티켓, 문서, 대화에 있고, 모두 불완전하고, 편향되어 있고, 때로는 없다. 그렇지 않은 척하면 확신에 찬 것처럼 들리는 추측이 나와서 사용자를 오도한다.
 
 ## Confidence Tiers
 
-Every claim in the output must sit in one tier. The tier sets its section and its phrasing.
+출력의 모든 주장은 한 단계에 놓여야 한다. 단계가 그 주장의 절과 표현을 정한다.
 
 ### 1. Direct
 
-An explicit, textual citation answers the question: something an author actually *wrote* that says why, not "the code does X so the author must have wanted X." For example, a PR description "this fixes the bug where users with >1000 items couldn't paginate", a ticket "we're adding this because customer Acme requested it in their security review", a code comment "// clamp to 100 because the upstream API rejects larger values", a design doc "we chose option A over option B because we need persistence across restarts", or a chat message from the author "switching to this approach since the old one was flaky in tests".
+명시적이고 텍스트로 된 인용이 질문에 답한다. "코드가 X를 하니까 작성자는 X를 원했을 것이다"가 아니라, 작성자가 실제로 *써 둔* 이유다. 예를 들어 PR 설명 "항목이 1000개를 넘는 사용자가 페이지네이션을 못 하던 버그를 고친다", 티켓 "고객 Acme가 보안 심사에서 요청해서 추가한다", 코드 주석 "// 상위 API가 더 큰 값을 거부하므로 100으로 제한한다", 설계 문서 "재시작 후에도 유지되어야 해서 옵션 B 대신 옵션 A를 골랐다", 작성자의 채팅 메시지 "기존 방식이 테스트에서 불안정해서 이 방식으로 바꾼다".
 
-Phrasing: confident, present tense, cited. "This exists because X."
+표현: 확신 있게, 현재 시제로, 인용을 달아서. "X 때문에 존재한다."
 
 ### 2. Supported
 
-Multiple pieces of indirect evidence converge on one conclusion. No single source states it explicitly, but the pattern across sources makes it likely. For example, the PR title says "improve performance", the ticket is labeled "perf", and the surrounding commits all touch the same hot path. Or several tests added with the change all exercise very large inputs. Or the author's other PRs from the same week all name the same incident.
+간접 증거 여러 개가 한 결론으로 수렴한다. 어느 하나도 명시적으로 말하지 않지만, 출처들에 걸친 패턴이 그 결론을 그럴듯하게 만든다. 예를 들어 PR 제목이 "성능 개선"이고, 티켓에 `perf` 라벨이 붙어 있고, 주변 커밋이 모두 같은 hot path를 건드린다. 또는 그 변경과 함께 추가된 테스트 여러 개가 모두 아주 큰 입력을 다룬다. 또는 같은 주에 작성자가 올린 다른 PR들이 모두 같은 인시던트를 언급한다.
 
-Phrasing: confident but clearly derived, citing each item. "The evidence points strongly to X: [the specific pieces]."
+표현: 확신 있게, 그러나 도출된 것임이 분명하게, 항목마다 인용을 달아서. "증거는 X를 강하게 가리킨다: [구체적인 증거들]."
 
 ### 3. Inferred
 
-A reasonable reading of the context that nothing explicitly supports. It is *your interpretation*, not a fact from the record. For example, the PR doesn't say why, but the error was happening in production (per the incident channel timing) and the fix was rushed (merged the same day), so it was likely a hotfix. Or the function name suggests retry logic, and its retry count of 3 matches the team's 3-retry convention elsewhere in the codebase.
+맥락을 합리적으로 읽은 것이지만 명시적으로 뒷받침하는 것은 없다. 기록의 사실이 아니라 *네 해석*이다. 예를 들어 PR은 이유를 말하지 않지만, 오류가 프로덕션에서 발생하고 있었고(인시던트 채널의 시점에 따르면) 수정이 서둘러 이뤄졌으므로(같은 날 머지) 핫픽스였을 가능성이 높다. 또는 함수 이름이 재시도 로직을 시사하고, 재시도 횟수 3이 코드베이스 다른 곳의 팀 관례(3회 재시도)와 맞는다.
 
-Phrasing: hedged, with the chain explicit. "Given A and B, C seems likely because D."
+표현: 단서를 달고 추론 사슬을 명시한다. "A와 B를 고려하면, D 때문에 C일 가능성이 높아 보인다."
 
 ### 4. Speculative
 
-A plausible hypothesis on thin evidence, where other explanations fit equally well. Worth presenting, since the user may know which is right, but mark it as a guess. For example, "This might be a workaround for a browser bug that's since been fixed, but we found no contemporary evidence of that", or "It's possible this threshold was chosen to match an SLA commitment, but no SLA doc references it."
+얇은 증거 위의 그럴듯한 가설이고, 다른 설명도 똑같이 들어맞는다. 사용자가 어느 쪽이 맞는지 알 수도 있으니 제시할 가치는 있지만, 추측이라고 표시한다. 예를 들어 "이것은 이후 고쳐진 브라우저 버그의 우회책일 수 있으나, 당시의 증거는 찾지 못했다", 또는 "이 임계값은 SLA 약속에 맞춰 정했을 수 있으나, 이를 언급하는 SLA 문서는 없다."
 
-Phrasing: "One possibility is X, but we have no direct evidence." Usually lives in Competing Hypotheses, alongside other possibilities.
+표현: "한 가능성은 X이지만 직접적인 증거는 없다." 보통 다른 가능성과 함께 Competing Hypotheses에 들어간다.
 
 ### 5. Unknown
 
-You looked and couldn't find out. A valid, important outcome. Document it.
+찾아봤지만 알아내지 못했다. 유효하고 중요한 결과다. 기록한다.
 
-Phrasing: "We searched X, Y, and Z and found no evidence of why." Be specific about *what* you searched. "We couldn't find out" is less useful than "We searched the ticket tracker with keywords A and B, scanned the 6 PRs that touched this file since 2023, and grep'd the repo for string literals matching the threshold. None surfaced a rationale."
+표현: "X, Y, Z를 검색했지만 이유를 알려 주는 증거는 찾지 못했다." *무엇을* 검색했는지 구체적으로 쓴다. "알아내지 못했다"보다 "이슈 트래커를 키워드 A와 B로 검색하고, 2023년 이후 이 파일을 건드린 PR 6개를 훑고, 임계값과 일치하는 문자열 리터럴을 레포에서 grep했다. 근거가 나온 것은 없었다"가 더 쓸모 있다.
 
 ## Phrasing Guide
 
-**Confidence words** imply Direct or Supported evidence and need a citation immediately adjacent. Never use them for inferences: "because", "the reason is", "was designed to" (claims author intent), "fixes" / "addresses" / "solves" (claims the change achieved its goal), "the team decided" (claims a group decision happened).
+**확신을 나타내는 단어**는 Direct 또는 Supported 증거를 함의하고, 바로 옆에 인용이 필요하다. 추론에는 절대 쓰지 않는다. 영어로 쓰면 "because", "the reason is", "was designed to"(작성자의 의도를 주장), "fixes" / "addresses" / "solves"(변경이 목표를 달성했다고 주장), "the team decided"(집단 결정이 있었다고 주장)이고, 한국어로 쓰면 "~때문에", "~한 이유는", "~하도록 설계되었다", "~를 고친다" / "~를 해결한다", "팀이 ~로 결정했다"다.
 
-**Hedges** signal interpretation, not report. Use them liberally in What We Can Reasonably Infer: "appears to", "seems to", "likely", "suggests", "is consistent with", "one reading is", "plausibly", "may have been", "the evidence points toward".
+**단서 표현(hedge)**은 보고가 아니라 해석이라는 신호다. What We Can Reasonably Infer에서 넉넉히 쓴다. 영어로는 "appears to", "seems to", "likely", "suggests", "is consistent with", "one reading is", "plausibly", "may have been", "the evidence points toward"이고, 한국어로는 "~인 것으로 보인다", "~인 듯하다", "~일 가능성이 높다", "~를 시사한다", "~와 부합한다", "한 해석은 ~다", "그럴듯하게는 ~", "~였을 수 있다", "증거는 ~를 가리킨다"다.
 
-**Words to avoid:**
+**피할 단어:**
 
-- "obviously". If it were obvious, the user wouldn't be asking
-- "clearly". Almost always precedes a claim that isn't clear
-- "of course". Same
-- "just" (as in "it's just X for performance"). Dismissive and usually hides uncertainty
-- "I think" / "I believe". You're synthesizing evidence, not giving a personal opinion. Use "the evidence suggests" instead.
+- "obviously" / "분명히", "당연히". 뻔했다면 사용자가 묻지 않았을 것이다
+- "clearly" / "명백히". 거의 항상 명확하지 않은 주장 앞에 붙는다
+- "of course" / "물론". 같은 이유
+- "just" / "그냥", "단지"("it's just X for performance"처럼). 깎아내리는 말이고, 대개 불확실성을 가린다
+- "I think" / "I believe" / "~라고 생각한다", "~라고 믿는다". 증거를 종합하는 것이지 개인 의견을 내는 것이 아니다. 대신 "the evidence suggests" / "증거는 ~를 시사한다"를 쓴다.
 
 ## Avoid Rationalization
 
-Code that "makes sense" today may have been written for reasons that no longer apply, or that were wrong at the time. Don't retrofit a clean rationale onto messy history. Don't assume the author did the "right" thing and work backward to justify it. Don't assume a consistent pattern was intentional when it might be copy-paste. Don't turn an absence of evidence into evidence of absence ("no one mentioned security concerns, so it must not have been a concern").
+오늘 "말이 되는" 코드는 지금은 적용되지 않는 이유로, 또는 당시에도 틀린 이유로 작성되었을 수 있다. 지저분한 이력에 깔끔한 근거를 끼워 맞추지 않는다. 작성자가 "옳은" 일을 했다고 가정하고 거꾸로 정당화하지 않는다. 일관된 패턴이 복사-붙여넣기일 수도 있는데 의도적이었다고 가정하지 않는다. 증거의 부재를 부재의 증거로 바꾸지 않는다("아무도 보안 우려를 언급하지 않았으니 우려가 아니었을 것이다").
 
 ## The Sycophancy Trap
 
-Users often embed a hypothesis: "Why do we do it this way, I assume it's for performance?" Don't simply confirm it. The guess is a prompt for investigation, not a conclusion to validate. Treat it as one candidate among others and check the evidence independently. If the evidence supports it, say so with citations. If not, say so, and present what the evidence *does* support.
+사용자는 흔히 질문에 가설을 담는다: "Why do we do it this way, I assume it's for performance?" 단순히 확인해 주지 않는다. 그 추측은 조사를 위한 단서이지 검증해 줄 결론이 아니다. 여러 후보 중 하나로 다루고 증거를 독립적으로 확인한다. 증거가 뒷받침하면 인용과 함께 그렇게 말한다. 아니면 아니라고 말하고, 증거가 *실제로* 뒷받침하는 것을 제시한다.
 
 ## When Evidence Contradicts
 
-Surface both sources in the output, with citations. Don't pick the one that fits a tidier narrative. For example, the ticket says "we need this for customer X's compliance requirement" and the PR says "cleaning up tech debt in this area". Both may be true (the ticket motivated the work, the PR gave the author's framing), or one may be wrong. Let the user make the call.
+두 출처를 인용과 함께 출력에 모두 드러낸다. 더 깔끔한 서사에 맞는 쪽을 고르지 않는다. 예를 들어 티켓은 "고객 X의 컴플라이언스 요구 때문에 필요하다"고 하고 PR은 "이 영역의 기술 부채를 정리한다"고 한다. 둘 다 사실일 수 있고(티켓이 작업의 동기였고, PR이 작성자의 프레이밍이었다), 하나가 틀렸을 수도 있다. 판단은 사용자가 하게 한다.
 
 ## When Evidence Is Missing
 
-An honest "we don't know" is one of the most valuable outputs. The user learns the answer isn't in the obvious places, that they'll need to ask a human (the original author, the product owner, the team lead), or that they can decide the question isn't worth pursuing further. Failing to mark a gap, and instead filling it with a confident guess, actively harms the user, because they'll act on the guess. Name each gap concretely: the question, the sources searched, what you searched for in each, and what you found (nothing, or only tangential material).
+솔직한 "모른다"는 가장 가치 있는 출력 중 하나다. 사용자는 답이 뻔한 곳에 없다는 것, 사람(원래 작성자, 제품 오너, 팀 리드)에게 물어야 한다는 것, 또는 이 질문은 더 파고들 가치가 없다고 판단해도 된다는 것을 알게 된다. gap을 표시하지 않고 확신 있는 추측으로 채우면 사용자가 그 추측대로 행동하므로 적극적으로 해를 끼친다. gap을 하나하나 구체적으로 명명한다: 질문, 검색한 출처, 출처마다 무엇을 검색했는지, 무엇을 찾았는지(없음, 또는 관련 없는 자료만).
 
 ## Before Finalizing
 
-Before the synthesizer delivers the output, it checks every claim in "What We Found" and "What We Can Reasonably Infer". Each claim has a citation or moves to Inferred or Hypotheses. Its phrasing matches its tier. It doesn't treat code as evidence for its own intent (if it does, remove or reclassify it). The output has a "What We Don't Know" section. If no gaps are mentioned, that's suspicious. Either the evidence was unusually complete or something is being swept under the rug.
+synthesizer는 출력을 내놓기 전에 "What We Found"와 "What We Can Reasonably Infer"의 모든 주장을 점검한다. 각 주장은 인용이 있거나 Inferred나 Hypotheses로 옮겨진다. 표현이 단계와 맞는다. 코드를 그 코드 자신의 의도에 대한 증거로 취급하지 않는다(그렇게 했다면 제거하거나 재분류한다). 출력에 "What We Don't Know" 절이 있다. gap이 하나도 언급되지 않았다면 의심스럽다. 증거가 이례적으로 완전했거나 무언가를 덮어 두고 있는 것이다.

@@ -1,18 +1,18 @@
 ---
 name: principle-minimize-reader-load
-description: "Apply when reviewing or shaping code that's hard to trace. Count layers between question and answer, and hidden state in the reader's head; collapse one-caller wrappers and shrink mutable scope."
+description: "추적하기 어려운 코드를 리뷰하거나 다듬을 때 적용한다. 질문과 답 사이의 레이어 수와, 독자 머릿속의 숨은 상태를 센다. 호출자가 하나뿐인 래퍼를 합치고 가변 상태의 범위를 줄인다."
 disable-model-invocation: true
 ---
 
 # Minimize Reader Load
 
-Maintainability is the work a reader must do to understand code. Track two axes: **layers to trace** (indirections between the question and the answer) and **state to hold** (hidden or mutable context the reader must keep in their head). LOC, cyclomatic complexity, and "clean architecture" are proxies. Reader load is the thing that matters. The two axes are independent. A flat file with 50 globals can be as hard to reason about as a 6-layer adapter stack. Guard both. This is the human analog of [Guard the Context Window](../principle-guard-the-context-window/SKILL.md). Working memory is finite for readers too.
+유지보수성은 독자가 코드를 이해하기 위해 해야 하는 일이다. 두 축을 추적한다. **추적할 레이어**(질문과 답 사이의 간접 참조)와 **들고 있어야 할 상태**(독자가 머릿속에 유지해야 하는 숨은 또는 가변 컨텍스트). LOC, 순환 복잡도, "클린 아키텍처"는 대리 지표일 뿐이다. 중요한 것은 독자 부하다. 두 축은 독립적이다. 전역 변수가 50개인 평평한 파일도 6레이어 어댑터 스택만큼 추론하기 어려울 수 있다. 둘 다 지킨다. 이것은 [Guard the Context Window](../principle-guard-the-context-window/SKILL.md)의 사람 쪽 대응이다. 독자의 작업 기억도 유한하다.
 
-- **Collapse layers** that cost more than they save: wrappers with one caller, adapters with no second implementation, speculative indirection that was never needed. Inline them.
-- **Make adjacent layers change the abstraction.** A layer that repeats the same methods and arguments adds reader load without compression. Collapse pass-through layers.
-- **Demand interface compression.** A broad interface that hides little complexity makes readers learn both the surface and the implementation. Prefer boundaries that hide meaningful decisions.
-- **Shrink state scope:** prefer pure functions (returns over mutations), locals over fields, fields over module state, and module state over globals. Derive instead of sync.
-- **Name the invariant at the boundary,** not in every consumer, so the reader learns it once.
-- Before adding a layer or a piece of state, ask: does it reduce reader load elsewhere by at least as much?
+- **레이어를 합친다.** 아끼는 것보다 비용이 큰 레이어가 대상이다. 호출자가 하나뿐인 래퍼, 두 번째 구현이 없는 어댑터, 필요한 적 없던 추측성 간접 참조. 인라인한다.
+- **인접한 레이어가 추상화를 바꾸게 한다.** 같은 메서드와 인자를 반복하는 레이어는 압축 없이 독자 부하만 늘린다. 그대로 전달만 하는 레이어를 합친다.
+- **인터페이스 압축을 요구한다.** 복잡성을 거의 숨기지 못하는 넓은 인터페이스는 독자가 표면과 구현을 둘 다 배우게 만든다. 의미 있는 결정을 숨기는 경계를 택한다.
+- **상태 범위를 줄인다.** 순수 함수(변경보다 반환), 필드보다 지역 변수, 모듈 상태보다 필드, 전역보다 모듈 상태를 택한다. 동기화하지 말고 도출한다.
+- **불변식은 모든 소비자가 아니라 경계에서 이름 붙인다.** 독자가 한 번만 배우게 한다.
+- 레이어나 상태를 추가하기 전에 묻는다. 다른 곳의 독자 부하를 최소한 그만큼 줄이는가?
 
-**The test:** can a new reader answer "where does X come from?" and "what can change X?" in under 30 seconds? If not, cut layers or cut state.
+**점검:** 새 독자가 "X는 어디서 오는가?"와 "무엇이 X를 바꿀 수 있는가?"에 30초 안에 답할 수 있는가? 아니라면 레이어를 줄이거나 상태를 줄인다.

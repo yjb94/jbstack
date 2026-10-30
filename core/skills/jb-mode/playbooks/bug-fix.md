@@ -1,15 +1,15 @@
 ### Bug fix
 
-**You own this task. Plan, review, verify.** Delegate investigation and the fix to subagents, stay in the lead. Pick each subagent's reasoning level for the job, per the Subagents section.
+**이 작업은 네가 책임진다. 계획하고, 검토하고, 검증한다.** 조사와 수정은 서브에이전트에게 위임하고, 주도권을 놓지 않는다. Subagents 절에 따라 서브에이전트마다 작업에 맞는 추론 수준을 고른다.
 
-Be scientific. Every shipped line traces to runtime evidence. Belt-and-suspenders that "might help" is a hypothesis, not a fix. It does not ship. When evidence refutes a hypothesis, revert what it motivated. The smallest change the evidence justifies ships, nothing more.
+과학적으로 한다. 내보내는 모든 줄은 런타임 증거로 거슬러 올라가야 한다. "도움이 될지도 모르는" 이중 안전장치는 가설이지 수정이 아니다. 내보내지 않는다. 증거가 가설을 반박하면 그 가설 때문에 넣은 것을 되돌린다. 증거가 정당화하는 가장 작은 변경만 내보내고, 그 이상은 없다.
 
-1. Reproduce it yourself on the matching surface, the simulator and the emulator, via the repo's `verify-<app>` skill (Non-negotiables), even when a debug or instrumentation protocol says to ask the user to reproduce. Ask the user only with a stated, specific reason the control surface cannot reach the target, such as camera, haptics, or gesture feel that only a real device has, and only after driving it as far as it goes. If it won't reproduce directly, synthesize the trigger, tighten conditions, or instrument until it fires.
-2. Binary-search the cause. Form the candidate hypotheses, then rule them out until one survives. Seed them with `how` over the affected subsystem and the **why** skill for regression history. Each pass, take the split that cuts the most remaining problem space, get runtime evidence, eliminate. When program state is unclear, add instrumentation or logging and read it in Metro, logcat, or the Xcode console as the code runs. Don't guess. Drive a long or stubborn hunt with the `/loop` command. Confirm the surviving *mechanism* with runtime evidence before the step-3 architect/interrogate fan-out.
-3. Plan the fix. If it crosses a function boundary, `architect` first. Delegate implementation to a subagent on `model: "sonnet"` with a specific scope.
-4. Verify on the same surface. The original repro now passes. "Inconclusive" or wrong-surface is not a pass. Flag it. Unit tests show branch behavior, not bug absence.
-5. Stage the commits so the failing repro lands before the fix in git history. See the **tdd** skill for the failing-test-first cadence when the bug has a cheap local test path. Skip it when the test would be expensive, integration-heavy, or unclear.
-   This is the canonical **sequence-verifiable-units** principle skill, the failing test first and the fix on top.
-6. Run **Opening a PR**.
+1. 디버그나 계측 프로토콜이 사용자에게 재현을 부탁하라고 해도, 레포의 `verify-<app>` 스킬(Non-negotiables)로 맞는 표면, 즉 시뮬레이터와 에뮬레이터에서 직접 재현한다. 제어 표면이 대상에 닿지 못하는 구체적인 이유를 밝힐 때만 사용자에게 부탁한다. 실기기에만 있는 카메라, 햅틱, 제스처 감각 같은 경우이며, 그것도 갈 수 있는 데까지 직접 몰아 본 뒤에만 부탁한다. 바로 재현되지 않으면 트리거를 합성하거나, 조건을 좁히거나, 발생할 때까지 계측한다.
+2. 원인을 이분 탐색한다. 후보 가설을 세우고, 하나만 남을 때까지 배제한다. 영향받는 서브시스템에 대한 `how`와 회귀 이력을 위한 **why** 스킬로 가설의 씨앗을 얻는다. 매 단계마다 남은 문제 공간을 가장 크게 줄이는 분할을 골라, 런타임 증거를 얻고, 배제한다. 프로그램 상태가 불분명하면 계측이나 로그를 넣고, 코드가 도는 동안 Metro, logcat, Xcode 콘솔에서 읽는다. 추측하지 않는다. 길거나 끈질긴 추적은 `/loop` 명령으로 몬다. 3단계의 architect/interrogate fan-out 전에, 살아남은 *메커니즘*을 런타임 증거로 확인한다.
+3. 수정을 계획한다. 함수 경계를 넘으면 먼저 `architect`를 쓴다. 구현은 범위를 구체적으로 정해 `model: "sonnet"` 서브에이전트에게 위임한다.
+4. 같은 표면에서 검증한다. 원래의 재현이 이제 통과해야 한다. "미확정"이나 엉뚱한 표면은 통과가 아니다. 그 사실을 드러내 알린다. 단위 테스트는 분기 동작을 보여 줄 뿐, 버그가 없음을 보여 주지 않는다.
+5. 실패하는 재현이 git 이력에서 수정보다 먼저 들어가도록 커밋을 나눈다. 버그에 값싼 로컬 테스트 경로가 있으면 실패 테스트 우선 흐름은 **tdd** 스킬을 본다. 테스트가 비싸거나, 통합 비중이 크거나, 불분명하면 **tdd** 흐름은 건너뛴다.
+   이것이 **sequence-verifiable-units** 원칙 스킬의 대표 사례다. 실패 테스트가 먼저, 수정이 그 위에.
+6. **Opening a PR**을 실행한다.
 
-**Reply:** what was broken, root cause, fix, how you verified. Paste failing-then-passing repro output verbatim.
+**회신:** 무엇이 고장 났는지, 근본 원인, 수정, 검증 방법. 실패했다가 통과하는 재현 출력을 그대로 붙여 넣는다.

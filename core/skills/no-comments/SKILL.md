@@ -1,24 +1,24 @@
 ---
 name: no-comments
-description: "Spawn Comment Sicko, fix accepted findings, and offer encodings for claimed constraints."
+description: "Comment Sicko를 띄우고, 수락한 지적을 고치고, 주장된 제약에 대한 인코딩을 제안한다."
 disable-model-invocation: true
 ---
 
 # No comments
 
-Spawn Comment Sicko. Act on accepted findings.
+Comment Sicko를 띄운다. 수락한 지적에 따라 행동한다.
 
-Defer to Comment Sicko's fresh perspective.
+Comment Sicko의 새로운 관점을 따른다.
 
 ## Scope
 
-Use the caller's files or diff. Otherwise use the current diff against the base branch, default `main`, including the working tree.
+호출자가 준 파일이나 diff를 쓴다. 없으면 기준 브랜치(기본값 `main`) 대비 현재 diff를 작업 트리까지 포함해 쓴다.
 
 ## Steps
 
-1. Spawn `Agent` with `subagent_type: "jbstack:comment-sicko"`. Pass the scope. Pick each subagent's reasoning level for the job, per the Subagents section of the **jb-mode** skill. Do not restate its rules.
-2. Inspect its report and diff. Reject application-code edits, scope escapes, exception-protected deletions, misstated `MUST KILL` reasons, and flags that treat kept intentional code as guilty. Reshape flags on our-code surprises stay actionable. Do not restore those comments. A keep survives only with proof it is about something we cannot change. Audit missed scoped lint and TypeScript suppressions. Correctness or safety suppressions stay actionable `MUST KILL`s. Restore deletions only with exact exceptions and scoped proof. Before accepting thin `IMPORTANT` or `do not remove` kills or keeps, run `/how` or `/why` on their symbol. If a kill is ambiguous, do not restore. If a keep is refuted or still ambiguous, delete it. Revert and rerun one rejected report with the failure named. Reject a second, report it open, and fail `/no-comments`.
-3. Fix trivial accepted flags directly by deleting a dead path, dropping a parameter, or using the real API. If any fix needs a shape, run `/architect` once for the accepted set and surrounding code. Stop at the sketch. Architect shapes. Step 4 implements.
-4. Implement the smallest root-cause fix in scope. Remove every named workaround. If the root cause is out of scope, land the smallest in-scope fix and report the rest open. The **principle-fix-root-causes** and **principle-redesign-from-first-principles** skills guide intent only. Neither authorizes widening the fence nor fixing instances outside it. Never bolt on symptom guards.
-5. Constraint comments say `do not remove`, `do not change wording`, or `talk to X before changing`. Leave keeps about things we cannot change. Offer the cheapest in-scope type, runtime, test, or CI lint. Wait for interactive approval. Unattended and eval require caller pre-approval. If approved, encode then delete. Otherwise delete, report the constraint open, and sketch out-of-scope work.
-6. Report the deletion count, restored comments, reruns, architect sketch, fixes, encoding offers, encodings, unenforced constraints, and other open work.
+1. `subagent_type: "jbstack:comment-sicko"`로 `Agent`를 띄운다. 범위를 넘긴다. 각 서브에이전트의 추론 수준은 **jb-mode** 스킬의 Subagents 절에 따라 작업에 맞게 고른다. 그 규칙을 다시 적지 않는다.
+2. 보고서와 diff를 점검한다. 애플리케이션 코드 수정, 범위 이탈, 예외로 보호된 삭제, 잘못 적힌 `MUST KILL` 사유, 의도적으로 유지한 코드를 유죄로 취급하는 표시는 거부한다. 우리 코드의 놀라움에 대한 재설계 표시는 계속 조치 대상이다. 그 주석들은 복원하지 않는다. 유지(keep)는 우리가 바꿀 수 없는 것에 관한 주석이라는 증거가 있을 때만 살아남는다. 놓친 범위 내 lint와 TypeScript 억제를 감사한다. 정확성이나 안전을 위한 억제는 조치 대상인 `MUST KILL`로 남는다. 삭제는 정확한 예외와 범위 내 증거가 있을 때만 복원한다. 근거가 빈약한 `IMPORTANT`나 `do not remove` 삭제 또는 유지를 수락하기 전에, 그 심볼에 `/how`나 `/why`를 돌린다. 삭제가 모호하면 복원하지 않는다. 유지가 반박되거나 여전히 모호하면 삭제한다. 거부한 보고서는 실패 사유를 명시해 되돌리고 한 번 다시 돌린다. 두 번째도 거부하면, 열린 채로 보고하고 `/no-comments`를 실패 처리한다.
+3. 사소하게 수락한 지적은 죽은 경로를 삭제하거나, 매개변수를 없애거나, 실제 API를 써서 직접 고친다. 고치는 데 설계 형태가 필요하면, 수락한 지적 전체와 주변 코드에 대해 `/architect`를 한 번 돌린다. 스케치에서 멈춘다. architect는 형태를 잡는다. 4단계에서 구현한다.
+4. 범위 안에서 근본 원인을 고치는 가장 작은 수정을 구현한다. 이름 붙은 우회 코드를 모두 제거한다. 근본 원인이 범위 밖이면 범위 안의 가장 작은 수정을 반영하고 나머지는 열린 채로 보고한다. **principle-fix-root-causes**와 **principle-redesign-from-first-principles** 스킬은 의도만 안내한다. 어느 쪽도 경계를 넓히거나 경계 밖 사례를 고칠 권한을 주지 않는다. 증상을 막는 가드를 절대 덧붙이지 않는다.
+5. 제약 주석은 `do not remove`, `do not change wording`, `talk to X before changing`처럼 말한다. 우리가 바꿀 수 없는 것에 관한 유지는 그대로 둔다. 범위 안에서 가장 값싼 타입, 런타임, 테스트, CI lint를 제안한다. 대화형 승인을 기다린다. 무인 실행과 eval에서는 호출자의 사전 승인이 필요하다. 승인되면 인코딩한 뒤 삭제한다. 그렇지 않으면 삭제하고, 제약을 열린 채로 보고하고, 범위 밖 작업을 스케치한다.
+6. 삭제 수, 복원한 주석, 재실행, architect 스케치, 수정, 인코딩 제안, 인코딩, 강제되지 않는 제약, 그 밖의 열린 작업을 보고한다.

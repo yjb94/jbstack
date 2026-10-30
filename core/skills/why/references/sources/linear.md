@@ -2,47 +2,47 @@
 
 ## What this source contains
 
-- Issues describing features, bugs, and their motivation
-- Project docs attached to issues (often PRDs or specs)
-- Parent/sub-issue relationships (broader initiative → specific tickets)
-- Comments on issues (clarifications, scope changes, "why we're doing this" rationale)
-- Labels (e.g., `compliance`, `customer-request`, `perf`) that signal the type of motivation
-- Status updates that explain scope changes
-- Attachments and linked GitHub PRs
+- 기능, 버그, 그 동기를 설명하는 이슈
+- 이슈에 붙은 프로젝트 문서 (대개 PRD나 spec)
+- 부모/하위 이슈 관계 (더 넓은 이니셔티브 → 구체적인 티켓)
+- 이슈 댓글 (명확화, 범위 변경, "왜 하는지" 근거)
+- 동기의 유형을 알려 주는 라벨 (예: `compliance`, `customer-request`, `perf`)
+- 범위 변경을 설명하는 상태 업데이트
+- 첨부 파일과 연결된 GitHub PR
 
-Linear is where the product/business context often lives: the "we're doing this because customer X asked" or "this is for the Q3 compliance initiative" layer.
+Linear는 제품/비즈니스 맥락이 있는 곳인 경우가 많다. "고객 X가 요청해서 한다"거나 "3분기 컴플라이언스 이니셔티브를 위한 것이다" 같은 층이다.
 
 ## How to search it
 
-Use the Linear MCP.
+Linear MCP를 쓴다.
 
-1. **Start with linked tickets.** If the seed commits or PRs reference ticket IDs (e.g., `ENG-1234`, `[BUG-567]`), fetch those first with `get_issue`. Read the full issue including comments.
-2. **List related issues by keyword.** Use `list_issues` with text search for the feature name, key symbol, or business term. Try multiple phrasings.
-3. **Walk the issue tree.** If you land on a sub-issue, fetch its parent. Sub-issues are tactical. Parents often carry the "why."
-4. **Read project docs.** If the issue belongs to a project, use `get_project` and check attached docs. Project-level documents are where specs and rationale are most often captured.
-5. **Check labels and milestones.** Labels hint at the category of motivation (customer-request, incident-followup, compliance). Milestones tie work to deadlines, which often reveal motivation.
+1. **연결된 티켓부터 시작한다.** 시드 커밋이나 PR이 티켓 ID(예: `ENG-1234`, `[BUG-567]`)를 참조하면 `get_issue`로 먼저 가져온다. 댓글을 포함해 이슈 전체를 읽는다.
+2. **키워드로 관련 이슈를 나열한다.** 기능 이름, 핵심 심볼, 비즈니스 용어로 `list_issues`의 텍스트 검색을 쓴다. 여러 표현을 시도한다.
+3. **이슈 트리를 따라간다.** 하위 이슈에 도착했다면 그 부모를 가져온다. 하위 이슈는 전술적이다. "why"는 부모에 있는 경우가 많다.
+4. **프로젝트 문서를 읽는다.** 이슈가 프로젝트에 속하면 `get_project`를 쓰고 첨부된 문서를 확인한다. spec과 근거는 프로젝트 수준 문서에 가장 자주 담긴다.
+5. **라벨과 마일스톤을 확인한다.** 라벨은 동기의 범주(customer-request, incident-followup, compliance)를 암시한다. 마일스톤은 작업을 마감과 묶고, 마감이 동기를 드러내는 경우가 많다.
 
 ## What good evidence looks like here
 
-- An issue description stating the business problem: "Customer Acme needs X because of their SOC2 audit"
-- A comment recording a decision: "We decided to go with approach B because approach A would require touching the billing service"
-- A parent issue titled like an initiative: "Q3 Enterprise Readiness" or "Reduce Payment Failures"
-- An attached PRD or spec
-- Labels like `customer:acme`, `incident-followup`, `compliance`, `perf-regression`
+- 비즈니스 문제를 밝히는 이슈 설명: "고객 Acme는 SOC2 감사 때문에 X가 필요하다"
+- 결정을 기록한 댓글: "접근 A는 결제 서비스를 건드려야 해서 접근 B로 가기로 했다"
+- 이니셔티브 같은 제목의 부모 이슈: "Q3 Enterprise Readiness" 또는 "Reduce Payment Failures"
+- 첨부된 PRD나 spec
+- `customer:acme`, `incident-followup`, `compliance`, `perf-regression` 같은 라벨
 
 ## Common pitfalls
 
-- **Scope drift.** The ticket the PR references may have been closed and reopened with a different scope. Read the whole history.
-- **Mechanical templates.** Some teams require "Why" sections but fill them with boilerplate. Generic text ("improve user experience") is probably not a real answer.
-- **Stale tickets.** Old tickets often reflect a version of the plan that changed. Check dates and cross-reference with the code's ship date.
-- **Closed-as-duplicate chains.** Follow the duplicate-of relationships back to the canonical ticket.
-- **Private workspace content.** If you can't access an issue, note that as a gap rather than guessing.
+- **범위 이동(scope drift).** PR이 참조한 티켓이 닫혔다가 다른 범위로 다시 열렸을 수 있다. 이력 전체를 읽는다.
+- **기계적인 템플릿.** 어떤 팀은 "Why" 절을 요구하지만 상투적인 말로 채운다. 일반적인 문구("사용자 경험 개선")는 진짜 답이 아닐 가능성이 크다.
+- **오래된 티켓.** 오래된 티켓은 바뀐 계획의 한 버전을 반영하는 경우가 많다. 날짜를 확인하고 코드의 출시일과 교차 확인한다.
+- **중복으로 닫힌 사슬.** duplicate-of 관계를 따라 정본 티켓으로 거슬러 올라간다.
+- **비공개 워크스페이스 내용.** 이슈에 접근할 수 없으면 추측하지 말고 gap으로 기록한다.
 
 ## What to return
 
-For each relevant ticket:
-- Ticket ID and title
-- The problem/motivation quoted from the description or comments (not paraphrased. The synthesizer needs the exact text to cite)
-- Labels, parent issue, project
-- Author, created date, closed date
-- Link to the ticket if available
+관련 티켓마다:
+- 티켓 ID와 제목
+- 설명이나 댓글에서 인용한 문제/동기 (의역하지 않는다. synthesizer가 인용하려면 정확한 텍스트가 필요하다)
+- 라벨, 부모 이슈, 프로젝트
+- 작성자, 생성일, 종료일
+- 가능하면 티켓 링크

@@ -1,19 +1,19 @@
 ---
 name: principle-experience-first
-description: "Apply when product, UX, or feature-scope tradeoffs come up. Choose user delight over implementation convenience; ship fewer polished features over more rough ones."
+description: "제품, UX, 기능 범위의 트레이드오프가 나올 때 적용한다. 구현 편의보다 사용자의 만족을 택한다. 거친 기능 여럿보다 다듬어진 기능 소수를 낸다."
 disable-model-invocation: true
 ---
 
 # Experience First
 
-When implementation convenience conflicts with user delight, choose delight.
+구현 편의와 사용자 만족이 충돌하면 만족을 택한다.
 
-- Every feature, control, and option must be justified
-- Ship less, ship better (polished experience with three features beats rough one with ten)
-- Prototype before committing (design decisions are cheaper in throwaway HTML than production code)
-- Get the details right (transitions, alignment, spacing, feedback, error states)
-- Tighten the core loop (every feature should serve the central workflow or get out of the way)
+- 모든 기능, 컨트롤, 옵션에는 정당한 이유가 있어야 한다
+- 적게 내고 더 잘 낸다 (기능 세 개를 다듬은 경험이 거친 열 개보다 낫다)
+- 확정하기 전에 프로토타입을 만든다 (설계 결정은 프로덕션 코드보다 버리는 HTML에서 더 싸다)
+- 디테일을 맞춘다 (전환, 정렬, 간격, 피드백, 오류 상태)
+- 핵심 루프를 조인다 (모든 기능은 중심 워크플로에 기여하거나 비켜서야 한다)
 
-The user is whoever consumes the work. For a UI that is the end user. For a library or an internal API it is the colleague who imports it. The engineer who maintains the code next is a user too. Weigh their experience the same way, and explain impact from their perspective.
+사용자는 작업의 결과물을 쓰는 모든 사람이다. UI라면 최종 사용자다. 라이브러리나 내부 API라면 그것을 import하는 동료다. 다음에 그 코드를 유지보수할 엔지니어도 사용자다. 그들의 경험도 같은 비중으로 따지고, 영향은 그들의 관점에서 설명한다.
 
-Foundations should serve the experience. Foundational thinking governs the *sequence* of work. This principle governs the *target*.
+기반은 경험을 뒷받침해야 한다. Foundational Thinking은 작업의 *순서*를 다룬다. 이 원칙은 *목표*를 다룬다.

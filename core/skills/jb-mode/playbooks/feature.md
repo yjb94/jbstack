@@ -1,21 +1,21 @@
 ### Feature
 
-**You own the design. Plan, review, verify.** Delegate implementation. Stay in the lead.
+**설계는 네가 책임진다. 계획하고, 검토하고, 검증한다.** 구현은 위임한다. 주도권을 놓지 않는다.
 
-1. `how` over the affected subsystem.
-2. `architect` for parallel design exploration.
-3. Write the throughput checkpoint as four todo items. A dimension that genuinely does not apply (single file, no fan-out) keeps its item with `n/a: <reason>` rather than being dropped:
-   - **Blocking first steps.** Gates run before fan-out.
-   - **Independent workstreams.** Disjoint files, services, or layers parallelize. Shared writes serialize.
-   - **Shared mutable state.** Default to splitting the target (the **separate-before-serializing-shared-state** principle skill). Serialize only for real invariants.
-   - **Smallest safe decomposition.** If one worker is best, name why.
-4. Delegate code-writing to a subagent on `model: "sonnet"` with a specific scope (file paths, named data shape and its organizing structure per **principle-model-the-domain**, a state machine over scattered booleans, a table/registry over branching, a typed model over repeated shape assumptions, chosen before the delegate writes logic, and success criteria). Pick each subagent's reasoning level for the job, per the Subagents section. When the implementation admits multiple valid shapes (error handling, abstraction layer, test structure), delegate via the **arena** skill instead so the runners surface the alternatives and the cross-judge guards the pick. Mandatory: no skip-with-reason escape, and Laziness Protocol does not override it (the gain is review separation, not lines saved). A subagent forbidden to spawn satisfies this by owning the diff directly with the same review separation. No "standing by" reply that waits on a nested agent. Comments per **Comments**. Surgical edits, re-ground against the source for upstream-derived files. Port shared-primitive improvements to all consumers and verify each. Commit liberally.
-5. Verify on the matching surface with the repo's `verify-<app>` skill, on iOS and Android, from its cheapest layer up. "Inconclusive" or wrong-surface is not a pass. Flag it.
-6. Rebase into small, ordered commits. Stack follow-ups.
-   Use the **sequence-verifiable-units** principle skill, building, verifying, and committing each small unit before the next.
-7. If the design is contested, `interrogate` before shipping.
-8. Run **Opening a PR**. At trust level 1, stop at local commits and report.
+1. 영향받는 서브시스템에 대해 `how`를 실행한다.
+2. 병렬 설계 탐색을 위해 `architect`를 실행한다.
+3. throughput checkpoint를 todo 항목 네 개로 적는다. 정말로 해당하지 않는 차원(파일 하나, fan-out 없음)도 항목을 빼지 않고 `n/a: <reason>`으로 남긴다:
+   - **먼저 끝내야 하는 차단 단계.** 게이트는 fan-out 전에 실행한다.
+   - **독립 작업 흐름.** 서로 겹치지 않는 파일, 서비스, 계층은 병렬로 한다. 공유 쓰기는 직렬로 한다.
+   - **공유 가변 상태.** 기본은 대상을 나누는 것이다(**separate-before-serializing-shared-state** 원칙 스킬). 진짜 불변식이 있을 때만 직렬로 한다.
+   - **가장 작은 안전한 분해.** 작업자 하나가 최선이면 이유를 밝힌다.
+4. 코드 작성은 `model: "sonnet"` 서브에이전트에게 구체적인 범위와 함께 위임한다(파일 경로, **principle-model-the-domain**에 따른 이름 붙은 데이터 형태와 그 조직 구조 — 흩어진 boolean 대신 상태 기계, 분기 대신 table/registry, 반복되는 형태 가정 대신 타입 있는 모델, 이것들을 위임받은 쪽이 로직을 쓰기 전에 정한다 — 그리고 성공 기준). Subagents 절에 따라 서브에이전트마다 작업에 맞는 추론 수준을 고른다. 구현이 여러 타당한 형태(에러 처리, 추상화 계층, 테스트 구조)를 허용하면, 대신 **arena** 스킬로 위임해 runner들이 대안을 드러내고 cross-judge가 선택을 지키게 한다. 필수다: 이유를 대고 건너뛰는 탈출구는 없고, Laziness Protocol도 이것을 뒤집지 않는다(이득은 줄인 줄 수가 아니라 리뷰 분리다). 띄우는 것이 금지된 서브에이전트는 같은 리뷰 분리를 지키며 diff를 직접 소유해 이를 충족한다. 중첩된 에이전트를 기다리며 "대기 중"이라고 회신하지 않는다. 주석은 **Comments**를 따른다. 외과적으로 수정하고, upstream에서 파생된 파일은 원본에 다시 맞춰 확인한다. 공유 primitive 개선은 모든 사용처에 옮기고 각각 검증한다. 커밋은 자주 한다.
+5. 레포의 `verify-<app>` 스킬로 맞는 표면에서, iOS와 Android 모두, 가장 싼 층부터 위로 검증한다. "미확정"이나 엉뚱한 표면은 통과가 아니다. 그 사실을 드러내 알린다.
+6. 작고 순서 있는 커밋으로 rebase한다. 후속 작업은 스택으로 쌓는다.
+   **sequence-verifiable-units** 원칙 스킬을 써서, 작은 단위마다 만들고, 검증하고, 커밋한 뒤 다음으로 넘어간다.
+7. 설계에 이견이 있으면 내보내기 전에 `interrogate`를 실행한다.
+8. **Opening a PR**을 실행한다. 신뢰 단계 1에서는 로컬 커밋에서 멈추고 보고한다.
 
-Code-coupled work (one feature, one migration) goes to a single owner with the checkpoint inline. That owner fans out internally after the blocking phase. Parent-level fan-out is for slices that produce independent artifacts (audits, cross-subsystem investigations, competing experiments). Rewrite the checkpoint at phase boundaries. Spawn a fresh owner rather than chaining interrupts.
+코드로 엮인 작업(기능 하나, 마이그레이션 하나)은 checkpoint를 인라인으로 가진 단일 소유자에게 간다. 그 소유자는 막는 단계가 끝난 뒤 내부에서 fan-out한다. 부모 수준의 fan-out은 독립된 산출물을 내는 조각(감사, 서브시스템을 가로지르는 조사, 경쟁 실험)을 위한 것이다. phase 경계에서 checkpoint를 다시 쓴다. 인터럽트를 이어 붙이지 말고 새 소유자를 띄운다.
 
-**Reply:** what you built, what you chose and why, the throughput checkpoint, open decisions. Tables for design alternatives.
+**회신:** 무엇을 만들었는지, 무엇을 왜 골랐는지, throughput checkpoint, 열린 결정. 설계 대안은 표로.

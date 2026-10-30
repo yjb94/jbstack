@@ -1,21 +1,21 @@
 ---
 name: principle-foundational-thinking
-description: "Apply before writing logic: choosing core types and data structures, sequencing scaffold-vs-feature work, asking what concurrent actors share. Get the data structures right so downstream code becomes obvious."
+description: "로직을 쓰기 전에 적용한다. 핵심 타입과 자료구조를 고를 때, 스캐폴드와 기능 작업의 순서를 정할 때, 동시에 움직이는 주체들이 무엇을 공유하는지 물을 때. 자료구조를 바르게 잡아 하류 코드가 자명해지게 한다."
 disable-model-invocation: true
 ---
 
 # Foundational Thinking
 
-**Structural decisions** protect option value. **Code-level decisions** protect simplicity.
+**구조적 결정**은 선택 가치를 지킨다. **코드 수준의 결정**은 단순함을 지킨다.
 
-**Data structures first.** Get the data shape right before writing logic. Define core types early, trace every access pattern, and choose structures that match the dominant paths.
+**자료구조가 먼저다.** 로직을 쓰기 전에 데이터 모양을 바르게 잡는다. 핵심 타입을 일찍 정의하고, 모든 접근 패턴을 추적하고, 지배적인 경로에 맞는 구조를 고른다.
 
-At code level, DRY the structure, not every line. Types and data models should converge. Three similar statements still beat a premature abstraction. Prefer explicit over clever. Test behavior and edge cases, not line counts.
+코드 수준에서는 모든 줄이 아니라 구조를 DRY하게 한다. 타입과 데이터 모델은 수렴해야 한다. 비슷한 문장 세 개가 성급한 추상화보다 낫다. 영리함보다 명시적인 쪽을 택한다. 줄 수가 아니라 동작과 엣지 케이스를 테스트한다.
 
-**Concurrency corollary.** Before sharing state between actors, ask "what happens if another actor modifies this concurrently?" If not "nothing", isolate.
+**동시성 따름 정리.** 주체들 사이에서 상태를 공유하기 전에 "다른 주체가 이것을 동시에 바꾸면 어떻게 되는가?"를 묻는다. 답이 "아무 일도 없다"가 아니면 격리한다.
 
-**Scaffold first.** If something helps every later phase, do it first. Ask "does every subsequent phase benefit from this existing?" CI, linting, test infrastructure, and shared types are scaffold. Sequence for option value: setup before features, tests before fixes. Keep commits small and single-purpose.
+**스캐폴드가 먼저다.** 이후 모든 단계에 도움이 되는 것은 먼저 한다. "이것이 존재하면 이후 모든 단계가 이득을 보는가?"를 묻는다. CI, lint, 테스트 인프라, 공유 타입이 스캐폴드다. 선택 가치를 위해 순서를 잡는다. 기능 전에 설정, 수정 전에 테스트. 커밋은 작고 단일 목적으로 유지한다.
 
-Each increment should land a coherent abstraction or deepen one that exists. Do not spread a new capability across callers as special-case coordination.
+각 증분은 일관된 추상화를 하나 올리거나 이미 있는 추상화를 깊게 해야 한다. 새 기능을 특수 케이스 조율로 호출자들에게 흩뿌리지 않는다.
 
-Subtraction comes before scaffolding. Remove dead code first, then lay foundations.
+뺄셈이 스캐폴딩보다 먼저다. 죽은 코드를 먼저 제거하고 그다음에 기반을 놓는다.

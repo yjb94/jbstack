@@ -1,27 +1,27 @@
 ---
 name: show-me-your-work
-description: "Keep a reviewable decision trail for long-running or unattended work: a TSV log with one row per decision (what, why, evidence, result). Local by default; commit it when a reviewer needs the trail to trust the result. Use for /show-me-your-work, autonomous or multi-phase runs, or work a human reviews after stepping away."
+description: "장시간 또는 무인으로 도는 작업의 검토 가능한 판단 기록을 남긴다. 판단 하나당 한 행(무엇, 왜, 증거, 결과)인 TSV 로그다. 기본은 로컬에 두고, 리뷰어가 결과를 믿으려면 기록이 필요할 때 커밋한다. /show-me-your-work, 자율 실행이나 여러 단계에 걸친 실행, 사람이 자리를 비운 뒤 검토하는 작업에 쓴다."
 disable-model-invocation: true
 ---
 
 # Show me your work
 
-Keep one canonical log.
+정본 로그를 하나만 둔다.
 
 ## The format
 
-A single TSV file, one row per decision. Cells stay single-line. Evidence is a pointer, not prose.
+TSV 파일 하나에 판단 하나당 한 행을 쓴다. 셀은 한 줄로 유지한다. 증거는 설명문이 아니라 포인터다.
 
-Copy `references/decision-log-template.tsv` (the header row) to start a clean log. Columns:
+깨끗한 로그로 시작하려면 `references/decision-log-template.tsv`(헤더 행)를 복사한다. 열은 다음과 같다.
 
-- **ts.** ISO8601 timestamp.
-- **phase.** The phase or workstream.
-- **decision.** What was chosen or done, one line.
-- **why.** The reason in plain words. If a principle drove it, say it plainly, not as a jargon tag.
-- **evidence.** A link or path that proves it: commit SHA, PR number, `file:line`, or an artifact, trace, or screenshot path. Never a paragraph.
-- **result.** The outcome or predicate state: `tests green`, `reverted`, `pixel-diff 0`, `INCONCLUSIVE`, `open`.
+- **ts.** ISO8601 타임스탬프.
+- **phase.** 단계 또는 작업 흐름.
+- **decision.** 선택했거나 한 일을 한 줄로.
+- **why.** 이유를 평이한 말로. 원칙이 판단을 이끌었다면 전문 용어 태그로 쓰지 말고 평이하게 말한다.
+- **evidence.** 그것을 증명하는 링크나 경로. 커밋 SHA, PR 번호, `file:line`, 아티팩트·트레이스·스크린샷 경로. 문단은 절대 안 된다.
+- **result.** 결과 또는 술어(predicate)의 상태. `tests green`, `reverted`, `pixel-diff 0`, `INCONCLUSIVE`, `open` 같은 값.
 
-An example, plain-spoken so a reviewer reads it at a glance.
+리뷰어가 한눈에 읽도록 평이하게 쓴 예다.
 
 ```
 ts	phase	decision	why	evidence	result
@@ -33,50 +33,50 @@ ts	phase	decision	why	evidence	result
 
 ## Logging a row
 
-Write each entry the way you'd tell a teammate what you did. Plain words, concrete actions, no AI speak or abstract jargon (the **unslop** skill applies to log text too).
+각 항목은 동료에게 한 일을 말하듯 쓴다. 평이한 말, 구체적인 행동으로 쓰고, AI 말투나 추상적인 전문 용어는 쓰지 않는다(**unslop** 스킬은 로그 텍스트에도 적용된다).
 
-Use the helper `scripts/log.sh <logfile> <phase> <decision> <why> <evidence> <result>`. It stamps `ts`, writes the header on first use, strips stray tabs/newlines, and prefixes any cell starting with `=`, `+`, `-`, or `@` with a single quote. A bare `printf` appending a row works too, but mind those same bytes if cells come from generated or user-supplied text.
+`scripts/log.sh <logfile> <phase> <decision> <why> <evidence> <result>` 헬퍼를 쓴다. 이 헬퍼는 `ts`를 찍고, 처음 쓸 때 헤더를 쓰고, 섞여 든 탭과 줄바꿈을 제거하고, `=`, `+`, `-`, `@`로 시작하는 셀 앞에 작은따옴표 하나를 붙인다. 순수 `printf`로 행을 덧붙여도 되지만, 셀이 생성된 텍스트나 사용자가 준 텍스트에서 오면 같은 바이트를 조심한다.
 
-Log decision points and checkpoints, not every action: a fork chosen, a unit completed with its verification result, a pivot or revert with its trigger, a blocker surfaced, a gate fixed. For loop runs, one row per iteration. Skip the trivial and self-evident.
+모든 행동이 아니라 판단 지점과 체크포인트를 기록한다. 고른 갈림길, 검증 결과와 함께 끝낸 단위, 계기와 함께 한 방향 전환이나 되돌림, 드러난 블로커, 고친 게이트가 그런 예다. 루프 실행에서는 반복마다 한 행을 쓴다. 사소하거나 자명한 것은 건너뛴다.
 
-A run is one agent conversation, including its later turns and any summary of it. A pickup, a replacement agent, or a new chat starts a new run. When a run adds to a log that already has rows, its first row has phase `start`, and so does its first row after another run's `start` row. So a run that comes back to a log in a later turn first reads the log's last rows to see whether another run wrote since. A `start` row names the `ts` range of the rows before it that this run did not write, and its evidence names this run, such as its agent id. Use phase `start` for nothing else.
+실행(run)은 에이전트 대화 하나이며, 이후 턴과 그 요약도 포함한다. 인수받은 에이전트, 교체된 에이전트, 새 채팅은 새 실행을 시작한다. 실행이 이미 행이 있는 로그에 덧붙일 때 그 첫 행의 phase는 `start`이다. 이 실행이 쓴 첫 행이 다른 실행의 `start` 행 뒤에 온다면 그 행도 phase는 `start`이다. 그래서 이후 턴에서 로그로 돌아온 실행은 먼저 로그의 마지막 행들을 읽고 그사이 다른 실행이 썼는지 확인한다. `start` 행은 이 실행이 쓰지 않은 앞선 행들의 `ts` 범위를 밝히고, evidence에는 에이전트 id처럼 이 실행을 가리키는 값을 적는다. phase `start`는 다른 용도로 쓰지 않는다.
 
 ## Where it lives
 
-By default the log is a working artifact, not committed. Keep it at `decisions.tsv` in the work dir, or `.audit/<task-slug>.tsv` when several efforts run at once, and leave it out of git.
+기본적으로 로그는 커밋하지 않는 작업 산출물이다. 작업 디렉터리의 `decisions.tsv`에 두고, 여러 작업이 동시에 돌 때는 `.audit/<task-slug>.tsv`에 두며, git에는 넣지 않는다.
 
-Commit it only when the work is ambitious enough that a reviewer needs the trail to trust the result.
+작업 규모가 커서 리뷰어가 결과를 믿으려면 기록이 필요할 때만 커밋한다.
 
 ## Rules
 
-- Append-only. A wrong call gets a new row that supersedes it. Never edit or delete history.
-- Prefer evidence produced by committed scripts over hand-made one-offs (the **encode-lessons-in-structure** principle skill).
+- 추가만 한다. 틀린 판단은 그것을 대체하는 새 행으로 정정한다. 기록을 절대 고치거나 지우지 않는다.
+- 손으로 만든 일회성 증거보다 커밋된 스크립트가 만든 증거를 우선한다(**encode-lessons-in-structure** 원칙 스킬).
 
 ## Audit the log against the transcript
 
-At the end of the run, before handing back, check the log told the truth. Read this run's transcript: the newest `.jsonl` directly in `~/.claude/projects/<slug>/`, where the slug is the workspace path with each `/` and `.` changed to `-`. Don't glob across `~/.claude/projects/*/`. That reads unrelated private chats. Walk this run's rows against what actually happened. Each stretch of them begins at one of this run's `start` rows, or at the first row if this run created the log, and ends at the next `start` row of another run:
+실행이 끝나고 넘기기 전에 로그가 사실을 말하는지 확인한다. 이 실행의 transcript를 읽는다. `~/.claude/projects/<slug>/` 바로 아래에서 가장 최신인 `.jsonl`이며, slug는 작업 공간 경로의 `/`와 `.`를 각각 `-`로 바꾼 것이다. `~/.claude/projects/*/` 전체에 glob을 걸지 않는다. 무관한 비공개 채팅을 읽게 된다. 이 실행의 행들을 실제로 일어난 일과 대조한다. 각 구간은 이 실행의 `start` 행에서 시작하고(이 실행이 로그를 만들었다면 첫 행에서 시작하고) 다른 실행의 다음 `start` 행에서 끝난다.
 
-- Check that every row maps to a real decision or action.
-- Check that each row's evidence resolves and shows what the row claims.
-- A fork, pivot, or abandoned approach that shaped the work but isn't logged is a gap. Add it.
+- 모든 행이 실제 판단이나 행동에 대응하는지 확인한다.
+- 각 행의 evidence가 가리키는 대상이 실제로 있고 행이 주장하는 내용을 보여주는지 확인한다.
+- 작업을 형성했지만 기록되지 않은 갈림길, 방향 전환, 포기한 접근은 공백이다. 추가한다.
 
-Correct the log, not the story. The audit never edits or removes a row, even an invented one. When a row records neither a real decision nor a real action, or its claim or evidence is wrong, add a row that supersedes it with what actually happened and a pointer that resolves. This audit does not check rows outside this run's stretches. If this run's own work shows one of them is wrong, supersede it like any wrong call.
+고치는 대상은 이야기가 아니라 로그다. 감사는 행을 고치거나 지우지 않으며, 꾸며낸 행도 마찬가지다. 행이 실제 판단도 실제 행동도 기록하지 않거나 주장이나 증거가 틀렸다면, 실제로 일어난 일과 실제로 찾아지는 포인터를 담은 대체 행을 추가한다. 이 감사는 이 실행의 구간 밖 행은 확인하지 않는다. 이 실행의 작업이 그중 하나가 틀렸음을 보여주면 다른 틀린 판단처럼 대체 행으로 정정한다.
 
 ## Cross-model review of the trail
 
-Before handing back, spawn a fresh subagent on `model: "opus"` with `effort: "xhigh"`, or `model: "sonnet"` when the work ran on opus. Self-review is not a substitute. The subagent reads the audit trail and the run's transcript, then flags what the user should pay attention to. Not a redo of the work, a scan for what's suboptimal or risky. Pick each subagent's reasoning level for the job, per the Subagents section of the **jb-mode** skill.
+넘기기 전에 새 서브에이전트를 `model: "opus"`, `effort: "xhigh"`로 띄운다. 작업이 opus에서 돌았다면 `model: "sonnet"`을 쓴다. 자기 리뷰는 대체가 되지 않는다. 서브에이전트는 감사 기록과 이 실행의 transcript를 읽고 사용자가 주목해야 할 점을 표시한다. 작업을 다시 하는 것이 아니라, 차선이거나 위험한 것을 훑는 일이다. 각 서브에이전트의 추론 수준은 **jb-mode** 스킬의 Subagents 절에 따라 작업에 맞게 고른다.
 
-- Decisions logged with weak or absent evidence.
-- Verification steps skipped or claimed without proof in the transcript.
-- Choices that look risky in hindsight (premature, scope-creeping, papering over a symptom).
-- Gaps the user would otherwise miss on a casual skim.
+- 증거가 약하거나 없이 기록된 판단.
+- transcript에서 건너뛰었거나 증명 없이 완료로 주장한 검증 단계.
+- 돌이켜 보면 위험해 보이는 선택(성급함, 범위 확대, 증상 덮기).
+- 가볍게 훑으면 사용자가 놓칠 공백.
 
-Every reply for a run that produced a trail ends with an "Attention" section. Lead with the reviewer's model on its own line (`reviewed by <model>`), then list each flag pointing to specific rows or moments. "No flags" is a valid value. The model name is not.
+기록을 남긴 실행의 모든 답변은 "Attention" 절로 끝낸다. 리뷰어의 모델을 한 줄에 단독으로 먼저 쓰고(`reviewed by <model>`), 각 지적을 특정 행이나 시점과 함께 나열한다. "No flags"는 유효한 값이다. 모델 이름만 적는 것은 유효한 값이 아니다.
 
 ## Reviewing the trail
 
-Read top to bottom, follow the evidence pointers, spot-check. GitHub renders a committed TSV as a table. `column -s$'\t' -t decisions.tsv` renders it in a terminal.
+위에서 아래로 읽고, 증거 포인터를 따라가고, 표본 점검을 한다. GitHub은 커밋된 TSV를 표로 렌더링한다. 터미널에서는 `column -s$'\t' -t decisions.tsv`로 렌더링한다.
 
 ## Composing this skill
 
-Other skills route their audit trail here instead of inventing one. Reference it by name and let it own the format. Don't restate the columns.
+다른 스킬은 자체 기록을 만들지 말고 감사 기록을 여기로 넘긴다. 이름으로 참조하고 형식은 이 스킬에 맡긴다. 열을 다시 쓰지 않는다.

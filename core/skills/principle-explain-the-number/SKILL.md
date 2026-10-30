@@ -1,18 +1,18 @@
 ---
 name: principle-explain-the-number
-description: "Apply before you measure, and before you trust, report, or act on a number you measured: a speedup, a regression, a throughput, a latency, or an eval result. Find what limits it, and rule out that it measured something other than the work you think."
+description: "측정하기 전에, 그리고 측정한 숫자(속도 향상, 회귀, 처리량, 지연 시간, 평가 결과)를 믿거나 보고하거나 그에 따라 행동하기 전에 적용한다. 무엇이 그 숫자를 제한하는지 찾고, 생각한 작업이 아닌 다른 것을 측정한 것은 아닌지 배제한다."
 disable-model-invocation: true
 ---
 
 # Explain the Number
 
-- **Write the decision before you run.** Name the result that would change a decision, and the noise floor. Stop when the run-to-run spread is larger than the effect.
-- **Ask "why not double?"** Name the resource or code path that bounds the result, such as a core, a lock, the disk, the network, or the load generator itself. Get it from a profile or from system counters taken during a run, then map it to source. A guess from reading the code is not a limiter. If you cannot say why the number is not twice as good, you do not know what you measured.
-- **List what else the number could be measuring, and rule out each one with evidence.** The usual suspects are errors, skipped or cached work, code that never ran, an untuned side (one left on default settings), noise, and a piece too small to matter end to end.
-- **Keep the evidence with the number.** Put the run count, the spread, and the limiter in the notes or a linked artifact.
+- **실행하기 전에 결정을 적는다.** 결정을 바꿀 결과와 노이즈 하한을 적는다. 실행 간 편차가 효과보다 크면 멈춘다.
+- **"왜 두 배가 아닌가?"를 묻는다.** 결과를 제한하는 자원이나 코드 경로를 댄다. 코어, 락, 디스크, 네트워크, 부하 생성기 자체 등이 후보다. 프로파일이나 실행 중에 얻은 시스템 카운터에서 근거를 얻고, 그것을 소스에 대응시킨다. 코드를 읽고 짐작한 것은 제한 요인이 아니다. 숫자가 왜 두 배 좋지 않은지 말할 수 없다면, 무엇을 측정했는지 모르는 것이다.
+- **그 숫자가 달리 무엇을 측정하고 있을 수 있는지 나열하고, 각각을 증거로 배제한다.** 흔한 원인은 오류, 건너뛰거나 캐시된 작업, 실행되지 않은 코드, 튜닝하지 않은 쪽(기본 설정으로 둔 쪽), 노이즈, 전체 흐름에서는 의미 없을 만큼 작은 부분이다.
+- **증거를 숫자와 함께 둔다.** 실행 횟수, 편차, 제한 요인을 노트나 링크된 산출물에 적는다.
 
-For a performance number, run the full procedure with the [benchmark-checklist](../benchmark-checklist/SKILL.md) skill. For an eval result, ask the same of the trials: did every run do the task, does the gap hold across trials and models, and does the scenario matter.
+성능 숫자라면 [benchmark-checklist](../benchmark-checklist/SKILL.md) 스킬로 전체 절차를 실행한다. 평가 결과라면 시행에 같은 질문을 한다. 모든 실행이 작업을 수행했는가, 격차가 시행과 모델에 걸쳐 유지되는가, 시나리오가 중요한가.
 
-You skipped this when a run started without the result that would change a decision, when the evidence behind a number has no run count, no spread, or no named limiter, or when the time saved is larger than the time the changed piece took.
+다음 중 하나면 이 원칙을 건너뛴 것이다. 결정을 바꿀 결과 없이 실행을 시작했을 때, 숫자의 근거에 실행 횟수, 편차, 이름 붙은 제한 요인이 없을 때, 절약된 시간이 바뀐 부분이 차지하던 시간보다 클 때.
 
-Distinct from [Prove It Works](../principle-prove-it-works/SKILL.md), which checks that an output is real.
+[Prove It Works](../principle-prove-it-works/SKILL.md)와 다르다. 그쪽은 출력이 진짜인지 확인한다.

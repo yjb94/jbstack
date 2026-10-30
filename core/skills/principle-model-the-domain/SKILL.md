@@ -1,24 +1,24 @@
 ---
 name: principle-model-the-domain
-description: "Apply when writing stateful logic, or when code branches a lot or repeats a shape assumption across files."
+description: "상태를 가진 로직을 쓸 때, 또는 코드가 많이 분기하거나 여러 파일에서 모양에 대한 가정을 반복할 때 적용한다."
 disable-model-invocation: true
 ---
 
 # Model the Domain
 
-Encode the real domain in a data structure instead of scattering it across conditionals. A structure that matches the domain makes invalid states unrepresentable and deletes branches. Choosing it at write time is cheap. Recovering it later reads as a refactor and gets deferred.
+실제 도메인을 조건문에 흩뿌리지 말고 자료구조로 옮긴다. 도메인에 맞는 구조는 잘못된 상태를 표현할 수 없게 만들고 분기를 지운다. 쓰는 시점에 고르면 싸다. 나중에 복구하면 리팩터링처럼 읽혀 미뤄진다.
 
-Reach for:
+다음을 택한다.
 
-- A state machine instead of scattered booleans, phases, or lifecycle checks.
-- A typed model instead of loose parameters or repeated shape assumptions.
-- A map, registry, lookup table, or discriminated union instead of branching spread across files.
-- A reducer or command/event model instead of ad hoc state mutations.
-- A module organized around one body of domain knowledge instead of a sequence such as load, validate, transform, and save. Execution order is not ownership.
-- A small module boundary that gathers repeated behavior, ownership, or invariants.
-- A queue, cache, index, graph, tree, or normalized collection where the access pattern calls for it.
-- Any other structure that fits. When none fits, work out what the code must never allow and how the data gets read, then find the structure that encodes exactly that.
+- 흩어진 불리언, 단계, 수명 주기 검사 대신 상태 기계.
+- 느슨한 매개변수나 반복되는 모양 가정 대신 타입이 있는 모델.
+- 여러 파일에 퍼진 분기 대신 맵, 레지스트리, 룩업 테이블, 또는 discriminated union.
+- 임시방편 상태 변경 대신 reducer 또는 command/event 모델.
+- load, validate, transform, save 같은 순서 대신, 하나의 도메인 지식 덩어리를 중심으로 조직한 모듈. 실행 순서는 소유권이 아니다.
+- 반복되는 동작, 소유권, 불변식을 모으는 작은 모듈 경계.
+- 접근 패턴이 요구하는 곳의 큐, 캐시, 인덱스, 그래프, 트리, 또는 정규화된 컬렉션.
+- 맞는 다른 모든 구조. 맞는 것이 없으면, 코드가 절대 허용하면 안 되는 것과 데이터를 읽는 방식을 알아낸 뒤, 정확히 그것을 구조에 녹인 구조를 찾는다.
 
-Do not force an abstraction. Prefer boring code if the current shape is already clear, local, and unlikely to grow. Be skeptical of an abstraction that adds indirection without removing branches, duplicated rules, invalid states, or lifecycle risk.
+추상화를 억지로 넣지 않는다. 현재 모양이 이미 분명하고 국소적이며 커질 가능성이 낮다면 지루한 코드를 택한다. 분기, 중복된 규칙, 잘못된 상태, 수명 주기 위험을 없애지 못하고 간접 참조만 더하는 추상화는 의심한다.
 
-The sign that you skipped this is a new feature that grows an existing if/else chain by one more branch, or a second boolean that must stay in sync with the first. Temporal decomposition is another sign. Phase-named modules repeat the same domain rules across steps.
+이것을 건너뛰었다는 신호는 두 가지다. 새 기능이 기존 if/else 체인에 분기를 하나 더 붙이는 경우, 그리고 첫 번째와 계속 동기화되어야 하는 두 번째 불리언이 생기는 경우다. 시간순 분해도 또 다른 신호다. 단계 이름을 딴 모듈들이 단계마다 같은 도메인 규칙을 반복한다.

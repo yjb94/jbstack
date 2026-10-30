@@ -1,22 +1,22 @@
 ---
 name: deslop
-description: Remove AI-generated code slop and clean up code style
+description: AI가 생성한 코드 slop을 제거하고 코드 스타일을 정리한다
 ---
 
 # Remove AI code slop
 
-Check the diff against main and remove AI-generated slop introduced in the branch.
+main 대비 diff를 확인하고, 브랜치에서 생긴 AI 생성 slop을 제거한다.
 
 ## Focus Areas
 
-- Extra comments that are unnecessary or inconsistent with local style
-- Defensive checks or try/catch blocks that are abnormal for trusted code paths
-- Casts to `any` used only to bypass type issues
-- Deeply nested code that should be simplified with early returns
-- Other patterns inconsistent with the file and surrounding codebase
+- 불필요하거나 로컬 스타일과 어긋나는 주석
+- 신뢰하는 코드 경로에는 이례적인 방어 검사나 try/catch 블록
+- 타입 문제를 우회하려고만 쓴 `any` 캐스트
+- 조기 반환으로 단순화해야 하는 깊게 중첩된 코드
+- 파일과 주변 코드베이스에 어긋나는 그 밖의 패턴
 
 ## Guardrails
 
-- Keep behavior unchanged unless fixing a clear bug.
-- Prefer minimal, focused edits over broad rewrites.
-- Keep the final summary concise (1-3 sentences).
+- 명백한 버그를 고치는 경우가 아니면 동작을 바꾸지 않는다.
+- 넓은 재작성보다 최소한의 집중된 수정을 우선한다.
+- 최종 요약은 간결하게(1-3문장) 쓴다.

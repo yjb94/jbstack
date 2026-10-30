@@ -1,42 +1,42 @@
 ---
 name: tdd
-description: "Use only when the user explicitly asks for TDD, a failing test, or a regression test, OR when the bug has an obvious cheap local test target. Skip when the test path is unclear, expensive, integration-heavy, or not requested."
+description: "사용자가 TDD, 실패하는 테스트, 회귀 테스트를 명시적으로 요청했을 때, 또는 버그에 저렴하고 뻔한 로컬 테스트 대상이 있을 때만 쓴다. 테스트 경로가 불분명하거나, 비싸거나, 통합 테스트 성격이 강하거나, 요청받지 않았다면 건너뛴다."
 disable-model-invocation: true
 ---
 
 # TDD Bug Fix
 
-When fixing a bug with a clear, cheap test path, make the broken behavior executable before changing production code. The goal is a focused regression test that fails before the fix and passes after it.
+테스트 경로가 분명하고 저렴한 버그를 고칠 때는 프로덕션 코드를 바꾸기 전에 깨진 동작을 실행 가능하게 만든다. 목표는 수정 전에는 실패하고 수정 후에는 통과하는, 범위가 좁은 회귀 테스트다.
 
-Do not force a test when it would be impractical. If the available test would require broad harness setup, brittle mocks, slow end-to-end infrastructure, production-only state, vague reproduction steps, or large unrelated fixture churn, skip adding a new test and use the closest useful verification instead.
+테스트가 비현실적이면 억지로 만들지 않는다. 쓸 수 있는 테스트가 넓은 하니스 설정, 깨지기 쉬운 mock, 느린 end-to-end 인프라, 프로덕션에만 있는 상태, 모호한 재현 절차, 무관한 대규모 fixture 변경을 요구한다면 새 테스트를 추가하지 않고 가장 가까운 유용한 검증을 쓴다.
 
 ## Workflow
 
-1. **Understand the bug.** Identify the intended behavior, current behavior, affected path, and smallest observable reproduction.
-2. **Choose the narrowest executable check.** Prefer the closest unit, component, integration, or regression test already used for that codepath. If no practical test path is obvious, do not create one from scratch just to satisfy the workflow.
-3. **Write the failing test first.** Add the smallest focused test that would have caught the bug. The test should encode intended behavior, not mirror the current implementation.
-4. **Run the new test before fixing.** Confirm it fails for the intended reason. If it passes or fails for an unrelated reason, correct the test or reproduction before editing the implementation.
-5. **Fix the bug.** Make the smallest production change that satisfies the intended behavior while preserving nearby contracts.
-6. **Rerun the regression test.** Confirm the test now passes.
+1. **Understand the bug.** 의도한 동작, 현재 동작, 영향받는 경로, 가장 작은 관찰 가능한 재현을 확인한다.
+2. **Choose the narrowest executable check.** 해당 코드 경로에서 이미 쓰는 가장 가까운 단위, 컴포넌트, 통합, 회귀 테스트를 우선한다. 현실적인 테스트 경로가 뚜렷하지 않으면 워크플로를 충족하려고 처음부터 만들지 않는다.
+3. **Write the failing test first.** 그 버그를 잡았을 가장 작고 집중된 테스트를 추가한다. 테스트는 현재 구현을 따라 하지 말고 의도한 동작을 담아야 한다.
+4. **Run the new test before fixing.** 의도한 이유로 실패하는지 확인한다. 통과하거나 무관한 이유로 실패하면, 구현을 고치기 전에 테스트나 재현을 바로잡는다.
+5. **Fix the bug.** 주변 계약을 지키면서 의도한 동작을 만족하는 가장 작은 프로덕션 변경을 한다.
+6. **Rerun the regression test.** 이제 테스트가 통과하는지 확인한다.
 
 ## If a Failing Test Is Impractical
 
-Use the closest executable regression check instead: a targeted script, manual reproduction command, browser automation, snapshot comparison, log assertion, or focused integration check.
+대신 가장 가까운 실행 가능한 회귀 검사를 쓴다. 목표를 좁힌 스크립트, 수동 재현 명령, 브라우저 자동화, 스냅샷 비교, 로그 단언, 집중된 통합 검사가 그런 예다.
 
-Prefer no new test over a bad test. A bad test is one that mostly tests mocks, encodes current implementation details, depends on timing or unrelated global state, needs expensive infrastructure for a small fix, or would be deleted immediately after proving the fix.
+나쁜 테스트보다 새 테스트가 없는 편이 낫다. 나쁜 테스트란 대부분 mock을 검증하거나, 현재 구현 세부를 그대로 담거나, 타이밍이나 무관한 전역 상태에 의존하거나, 작은 수정에 비싼 인프라가 필요하거나, 수정을 증명한 직후 바로 지워질 테스트다.
 
 ## Guardrails
 
-- Do not change tests merely to match a wrong implementation.
-- Do not weaken existing assertions unless the expected behavior has genuinely changed and the reason is clear.
-- Keep the regression test focused on the bug. Avoid broad fixture churn or unrelated coverage expansion.
-- If the bug is flaky, make the test deterministic where possible and document the signal being locked down.
-- If the bug exposes a broader class of failures, first land the focused regression path, then consider additional sibling coverage.
+- 틀린 구현에 맞추려고 테스트를 바꾸지 않는다.
+- 기대 동작이 실제로 바뀌었고 그 이유가 분명한 경우가 아니면 기존 단언을 약화하지 않는다.
+- 회귀 테스트는 그 버그에 집중시킨다. 광범위한 fixture 변경이나 무관한 커버리지 확장을 피한다.
+- 버그가 불안정(flaky)하다면 가능한 한 테스트를 결정적으로 만들고, 고정하려는 신호를 문서로 남긴다.
+- 버그가 더 넓은 종류의 실패를 드러낸다면 먼저 집중된 회귀 경로를 반영하고, 그다음에 형제 경로의 추가 커버리지를 검토한다.
 
 ## Final Response
 
-Report the evidence, not just the outcome:
+결과만 말하지 말고 증거를 보고한다.
 
-- Name the failing-before test or executable check and the failure it produced.
-- Name the passing-after test run and any nearby validation performed.
-- If failing-before evidence could not be demonstrated, state why and describe the closest regression check used instead.
+- 수정 전에 실패한 테스트나 실행 가능한 검사와, 그것이 낸 실패를 적는다.
+- 수정 후에 통과한 테스트 실행과, 수행한 주변 검증을 적는다.
+- 수정 전 실패 증거를 보여주지 못했다면 그 이유를 밝히고, 대신 쓴 가장 가까운 회귀 검사를 설명한다.

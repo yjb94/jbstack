@@ -1,16 +1,16 @@
 ---
 name: principle-separate-before-serializing-shared-state
-description: "Apply when concurrent actors might write to the same file, branch, key, or state object. Eliminate the sharing first; serialize structurally only when one shared writer is a real invariant."
+description: "동시에 움직이는 주체들이 같은 파일, 브랜치, 키, 상태 객체에 쓸 수 있을 때 적용한다. 먼저 공유를 없앤다. 쓰는 주체가 하나인 것이 진짜 불변식일 때만 구조적으로 직렬화한다."
 disable-model-invocation: true
 ---
 
 # Separate Before Serializing Shared State
 
-When concurrent actors might share mutable state, first ask whether they need the same mutable object. If not, eliminate the sharing. When sharing is real, enforce serialization structurally: lockfiles, sequential phases, exclusive ownership. Instructions and conventions are not concurrency control.
+동시에 움직이는 주체들이 가변 상태를 공유할 수 있다면, 먼저 그들이 같은 가변 객체를 필요로 하는지 묻는다. 아니라면 공유를 없앤다. 공유가 진짜라면 직렬화를 구조적으로 강제한다. 락 파일, 순차 단계, 배타적 소유권. 지시와 관례는 동시성 제어가 아니다.
 
-**Why:** Concurrent writes to shared state create race conditions that are intermittent, hard to reproduce, and expensive to debug.
+**이유:** 공유 상태에 대한 동시 쓰기는 간헐적이고, 재현하기 어렵고, 디버깅 비용이 큰 경쟁 상태를 만든다.
 
-**Pattern:**
-1. **Identify shared mutable state** (files both read and write, branches both push to, APIs both define and consume).
-2. **Default: eliminate the shared write target.** Ask: do these actors need one canonical object, or are they publishing independent facts? Give each actor its own owned file, key, branch, or state directory, and merge only at the read/reporting boundary. Two workers writing their own `lastX` field into one `state.json` is still shared mutation. `indexer-state.json` + `metrics-state.json` is not.
-3. **Only when one shared write target is a real invariant, serialize access structurally** (lockfiles, sequential phases, single-writer actor, or atomic compare-and-swap). Treat "we need a lock" as a design smell to check, not as the default answer.
+**패턴:**
+1. **공유된 가변 상태를 찾는다** (둘 다 읽고 쓰는 파일, 둘 다 푸시하는 브랜치, 둘 다 정의하고 소비하는 API).
+2. **기본값: 공유 쓰기 대상을 없앤다.** 묻는다. 이 주체들은 하나의 정규 객체가 필요한가, 아니면 독립된 사실을 발행하는가? 각 주체에게 자기 소유의 파일, 키, 브랜치, 상태 디렉터리를 주고, 읽기·보고 경계에서만 병합한다. 두 워커가 각자의 `lastX` 필드를 하나의 `state.json`에 쓰는 것은 여전히 공유 변경이다. `indexer-state.json` + `metrics-state.json`은 아니다.
+3. **공유 쓰기 대상이 하나인 것이 진짜 불변식일 때만 접근을 구조적으로 직렬화한다** (락 파일, 순차 단계, 단일 작성자 actor, 또는 원자적 compare-and-swap). "락이 필요하다"는 기본 답이 아니라 확인해야 할 설계 냄새로 다룬다.

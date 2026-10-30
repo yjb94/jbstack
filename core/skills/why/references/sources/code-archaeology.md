@@ -2,20 +2,20 @@
 
 ## What this source contains
 
-- Commit history (messages, dates, authors, diffs)
-- PR descriptions, review comments, and discussion threads (via `gh`)
-- Inline code comments, TODOs, FIXMEs, deprecation notes
-- ADRs (architectural decision records) if the repo keeps them
-- Tests, whose names and assertions often encode the edge cases that motivated a change
-- Related files modified in the same commits (co-change signal)
-- CHANGELOG entries and release notes in the repo
-- Issue/ticket IDs in commit messages and PR bodies
+- 커밋 이력 (메시지, 날짜, 작성자, diff)
+- PR 설명, 리뷰 댓글, 논의 스레드 (`gh`로)
+- 인라인 코드 주석, TODO, FIXME, deprecation 노트
+- ADR(architectural decision record). 레포가 두는 경우
+- 테스트. 이름과 assertion에 변경의 동기가 된 엣지 케이스가 인코딩되어 있는 경우가 많다
+- 같은 커밋에서 수정된 관련 파일 (co-change 신호)
+- 레포 안의 CHANGELOG 항목과 릴리스 노트
+- 커밋 메시지와 PR 본문의 이슈/티켓 ID
 
-The most trustworthy source, tied directly to the code, and the most complete. Everything that went through the repo should be here.
+코드에 직접 묶여 있어서 가장 신뢰할 수 있고 가장 완전한 출처다. 레포를 거친 것은 모두 여기에 있어야 한다.
 
 ## How to search it
 
-Expand the seed commit list:
+시드 커밋 목록을 넓힌다:
 
 ```bash
 # History through renames
@@ -37,7 +37,7 @@ git show <hash>
 git log <old>..<new> -p -- <file>
 ```
 
-Look for out-of-band docs:
+대역 외(out-of-band) 문서를 찾는다:
 
 ```bash
 # ADRs often live in docs/adr/ or similar

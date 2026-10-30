@@ -1,12 +1,12 @@
 ### Authoring or modifying a skill
 
-**You own the skill's voice.**
+**스킬의 목소리는 네가 책임진다.**
 
-1. Use the **skill-creator** skill.
-2. Validate the skill: frontmatter has `name` and `description`, referenced files exist, cross-skill links resolve.
-3. Test cases if structural. Skip if subjective.
-4. Run **Opening a PR** in the harness repo, `yjb94/jbstack` (local checkout `~/projects/jbstack`).
+1. **skill-creator** 스킬을 쓴다.
+2. 스킬을 검증한다: frontmatter에 `name`과 `description`이 있는지, 참조한 파일이 존재하는지, 스킬 간 링크가 해석되는지.
+3. 구조적인 내용이면 테스트 케이스를 만든다. 주관적인 내용이면 건너뛴다.
+4. harness 레포 `yjb94/jbstack`(로컬 체크아웃 `~/projects/jbstack`)에서 **Opening a PR**을 실행한다.
 
-When in doubt, delete. Keep only prose that changes a decision. Tell it to do the thing and skip the reason. Explain only when the rule is confusing without one. Match tone to scope. Point at structural sources (types, READMEs, config) per the **encode-lessons-in-structure** principle skill. Delegate to other skills by path. Don't restate. A workflow you keep hitting but isn't captured → propose a new skill.
+애매하면 지운다. 결정을 바꾸는 산문만 남긴다. 할 일을 시키고 이유는 생략한다. 규칙이 이유 없이는 헷갈릴 때만 설명한다. 어조는 범위에 맞춘다. **encode-lessons-in-structure** 원칙 스킬에 따라 구조적 출처(타입, README, 설정)를 가리킨다. 다른 스킬에는 경로로 위임한다. 다시 서술하지 않는다. 계속 부딪히는데 담겨 있지 않은 워크플로가 있으면 새 스킬을 제안한다.
 
-**Reply:** summary of the skill, key design decisions, validation notes.
+**회신:** 스킬 요약, 주요 설계 결정, 검증 메모.

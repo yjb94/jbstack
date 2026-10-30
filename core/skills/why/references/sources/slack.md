@@ -2,16 +2,16 @@
 
 ## How to search it
 
-Slack MCP tools vary. Check which Slack MCP is available and inspect its tool schema first. It may require `mcp_auth`. If authentication fails, stop and report the gap.
+Slack MCP 도구는 제각각이다. 어떤 Slack MCP를 쓸 수 있는지 확인하고 먼저 도구 스키마를 살펴본다. `mcp_auth`가 필요할 수 있다. 인증에 실패하면 멈추고 gap을 보고한다.
 
-1. **Author-bounded search.** Messages from the PR author around the PR merge date. Limits scope dramatically and often hits gold.
-3. **PR URL search.** Slack often links PRs when they're reviewed or discussed. Search for the PR URL (or just `/pull/<number>`).
-4. **Error string search.** If the code handles a specific error, search for the error string. Incident threads often surface.
+1. **작성자 한정 검색.** PR 머지 날짜 무렵 PR 작성자의 메시지. 범위가 크게 줄고 알짜가 걸리는 경우가 많다.
+3. **PR URL 검색.** Slack에는 PR을 리뷰하거나 논의할 때 링크가 걸리는 경우가 많다. PR URL(또는 `/pull/<number>`만)을 검색한다.
+4. **에러 문자열 검색.** 코드가 특정 에러를 처리한다면 그 에러 문자열을 검색한다. 인시던트 스레드가 나오는 경우가 많다.
 
 ## Common pitfalls
 
-- **Channel archaeology limits.** Very old messages may be gone due to retention policies. If you can't find anything before a certain date, note the retention cliff.
-- **Unsearched DMs.** Many decisions happen in DMs that aren't searchable. You'll miss them. That's a known limitation.
-- **Speculative jokes as "decisions."** Slack is casual. "Lol just do the thing" isn't a decision, even if it preceded the commit. Look for considered discussion.
-- **Context collapse in single messages.** Without the thread, a single message often reads differently than in context. Always fetch threads.
-- **Auth failures.** If the MCP isn't authenticated, stop. Don't make up findings. Report that Slack wasn't searchable.
+- **채널 고고학의 한계.** 아주 오래된 메시지는 보존 정책 때문에 없을 수 있다. 특정 날짜 이전 것이 아무것도 안 나오면 보존 한계(retention cliff)를 기록한다.
+- **검색되지 않는 DM.** 많은 결정이 검색할 수 없는 DM에서 이뤄진다. 놓칠 것이다. 알려진 한계다.
+- **추측성 농담을 "결정"으로 보는 것.** Slack은 격식이 없다. "그냥 해버리자 ㅋㅋ"는 커밋보다 앞섰더라도 결정이 아니다. 숙고한 논의를 찾는다.
+- **단일 메시지의 맥락 붕괴.** 스레드가 없으면 메시지 하나는 맥락 속에서와 다르게 읽히는 경우가 많다. 스레드는 항상 가져온다.
+- **인증 실패.** MCP가 인증되지 않았으면 멈춘다. 발견을 지어내지 않는다. Slack을 검색할 수 없었다고 보고한다.

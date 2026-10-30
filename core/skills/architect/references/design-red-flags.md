@@ -1,57 +1,57 @@
 # Design red flags
 
-Screen every candidate before synthesis. A red flag is a reason to revise or reject the shape.
+종합 전에 모든 후보를 거른다. red flag는 형태를 고치거나 기각할 이유다.
 
 ## Shallow module
 
-A shallow module exposes a large interface while hiding little complexity. Judge depth by the capability and policy hidden behind the public surface relative to the size of that surface. Prefer a simple interface backed by substantial behavior.
+shallow module은 큰 인터페이스를 드러내면서 숨기는 복잡성은 적다. 깊이는 공개 표면 뒤에 숨은 능력과 정책을 그 표면의 크기에 견주어 판단한다. 상당한 동작이 뒷받침하는 단순한 인터페이스를 택한다.
 
-Do not confuse a deep module with a deep call chain. A deep call chain scatters understanding across layers. A deep module concentrates capability behind one interface.
+deep module을 깊은 호출 체인과 혼동하지 않는다. 깊은 호출 체인은 이해를 여러 계층에 흩뿌린다. deep module은 능력을 하나의 인터페이스 뒤에 모은다.
 
-Look for these signs:
+다음 징후를 찾는다:
 
-- Callers coordinate several methods to complete one operation.
-- Public options expose internal stages or implementation choices.
-- Learning the interface does not save the caller from learning the implementation.
+- 호출자가 작업 하나를 끝내려고 메서드 여러 개를 조율한다.
+- 공개 옵션이 내부 단계나 구현 선택을 드러낸다.
+- 인터페이스를 배워도 호출자가 구현을 배우는 수고를 덜지 못한다.
 
 ## Information leakage
 
-Information leakage makes multiple modules depend on the same internal decision. A representation, policy, or protocol detail appears in more than one place, so changing it requires coordinated edits.
+information leakage는 여러 모듈이 같은 내부 결정에 의존하게 만든다. 표현, 정책, 프로토콜 세부가 두 곳 이상에 나타나서 바꾸려면 여러 곳을 함께 고쳐야 한다.
 
-Public re-exports of transport or wire types are leakage. Parse external data into domain types behind the interface. Keep storage schemas, framework objects, and protocol details private.
+전송 타입이나 wire 타입을 공개 re-export하는 것은 leakage다. 외부 데이터는 인터페이스 뒤에서 도메인 타입으로 파싱한다. 저장소 스키마, 프레임워크 객체, 프로토콜 세부는 비공개로 둔다.
 
 ## Temporal decomposition
 
-Temporal decomposition organizes modules by execution order instead of the knowledge they own. Separate load, validate, transform, and save stages often repeat one representation and its invariants across several boundaries.
+temporal decomposition은 모듈이 소유한 지식이 아니라 실행 순서로 모듈을 조직한다. load, validate, transform, save 단계를 따로 두면 하나의 표현과 그 불변식이 여러 경계에 걸쳐 반복되는 경우가 많다.
 
-Group code around domain knowledge and ownership. Methods that run at different times can still belong to one module when they protect the same decisions.
+도메인 지식과 소유권을 중심으로 코드를 묶는다. 서로 다른 시점에 실행되는 메서드도 같은 결정을 지킨다면 한 모듈에 속할 수 있다.
 
 ## Pass-through method
 
-A pass-through method forwards the same arguments to another method with the same shape. It adds a layer without hiding complexity.
+pass-through method는 같은 인자를 같은 모양의 다른 메서드로 그대로 넘긴다. 복잡성을 숨기지 않고 계층만 더한다.
 
-Remove it or move responsibility to the module that can complete the operation. Keep a forwarding boundary only when it adds policy, adaptation, or a distinct abstraction.
+제거하거나, 작업을 끝낼 수 있는 모듈로 책임을 옮긴다. 정책, 적응(adaptation), 별개의 추상화를 더할 때만 전달 경계를 유지한다.
 
 ## Split ownership
 
-More than one module writes the same state or keeps its own copy of it. An agent that edits one writer can't see the others, so their rules diverge.
+둘 이상의 모듈이 같은 상태에 쓰거나 각자 사본을 가진다. 한 writer를 고치는 에이전트는 다른 writer를 보지 못하므로 규칙이 갈라진다.
 
-Give each piece of state one owner. Other modules read it or ask the owner to change it.
+상태 하나에 소유자 하나를 둔다. 다른 모듈은 읽거나 소유자에게 바꿔 달라고 요청한다.
 
 ## Two ways to do one task
 
-The design supports more than one way to do the same task. An agent copies whichever way it finds first, so every way keeps gaining callers.
+설계가 같은 작업을 하는 방법을 둘 이상 지원한다. 에이전트는 먼저 발견한 방법을 복사하므로 모든 방법이 계속 호출자를 얻는다.
 
-Keep one way. Move callers off the others and delete them in the same change.
+방법을 하나만 둔다. 호출자를 나머지에서 옮기고, 같은 변경에서 나머지를 삭제한다.
 
 ## Importable internals
 
-A caller can import a module's internals. An agent takes the shortest path that compiles, so it imports them directly and they become part of the interface.
+호출자가 모듈의 내부를 import할 수 있다. 에이전트는 컴파일되는 가장 짧은 길을 택하므로 내부를 직접 import하고, 그것이 인터페이스의 일부가 된다.
 
-Make internals unreachable from outside the module, so an import from outside fails the build.
+내부를 모듈 밖에서 닿을 수 없게 만들어서, 밖에서 import하면 빌드가 실패하게 한다.
 
 ## Hand-synced list
 
-Two or more places list the same items, and adding an item means editing every list. An agent that sees one list updates only that one.
+둘 이상의 곳이 같은 항목을 나열하고, 항목을 추가하려면 모든 목록을 고쳐야 한다. 목록 하나만 본 에이전트는 그것만 갱신한다.
 
-Keep one list and derive the others from it. If a list can't be derived, make the build fail when the lists disagree.
+목록 하나를 두고 나머지는 거기서 도출한다. 도출할 수 없는 목록이면 목록이 어긋날 때 빌드가 실패하게 한다.

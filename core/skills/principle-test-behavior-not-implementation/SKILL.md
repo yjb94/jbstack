@@ -1,20 +1,20 @@
 ---
 name: principle-test-behavior-not-implementation
-description: "Apply when you write, change, or keep a test. Assert what the code's users can observe, so that the test fails when that behavior breaks and keeps passing when only the internals change."
+description: "테스트를 쓰거나, 바꾸거나, 유지할 때 적용한다. 코드의 사용자가 관찰할 수 있는 것을 단언해서, 그 동작이 깨지면 테스트가 실패하고 내부만 바뀔 때는 계속 통과하게 한다."
 disable-model-invocation: true
 ---
 
 # Test Behavior, Not Implementation
 
-A test is a claim about what the code does for its users: a caller, an end user, or another service. Behavior is what those users can observe through the interface they use. That includes return values, errors, state they can read back, and effects on systems outside the code, such as a request sent, a row written, or a message emitted. Implementation is what they cannot observe: private helpers, internal call order, intermediate data, and which internal collaborator did the work.
+테스트는 코드가 사용자를 위해 무엇을 하는지에 대한 주장이다. 사용자는 호출자, 최종 사용자, 또는 다른 서비스다. 동작은 그 사용자가 쓰는 인터페이스로 관찰할 수 있는 것이다. 반환값, 오류, 다시 읽을 수 있는 상태, 코드 밖 시스템에 미치는 효과(보낸 요청, 쓴 행, 내보낸 메시지)가 포함된다. 구현은 그들이 관찰할 수 없는 것이다. 비공개 헬퍼, 내부 호출 순서, 중간 데이터, 어느 내부 협력자가 일을 했는가.
 
-Judge each test against two imagined edits:
+각 테스트를 상상 속 두 가지 편집에 비춰 판단한다.
 
-- **Break the behavior.** Make the code return a wrong value, skip an effect, or do the effect twice. If the test still passes, it proves nothing. The usual causes are an assertion looser than the contract, an expected value computed by the code under test, a restated constant or prompt string that never runs the code that reads it, and an assertion on data that the test built itself.
-- **Change the internals.** Keep every observable result the same and restructure the code underneath. If the test now fails, it is pinned to the implementation. It will need a rewrite on every refactor and still catches no bug.
+- **동작을 깨뜨린다.** 코드가 잘못된 값을 반환하게 하거나, 효과를 건너뛰게 하거나, 효과를 두 번 일으키게 한다. 그래도 테스트가 통과하면 아무것도 증명하지 못한다. 흔한 원인은 계약보다 느슨한 단언, 테스트 대상 코드가 계산한 기대값, 그 값을 읽는 코드를 실행하지 않는 테스트에 다시 적어 둔 상수나 프롬프트 문자열, 테스트가 스스로 만든 데이터에 대한 단언이다.
+- **내부를 바꾼다.** 관찰 가능한 결과는 모두 그대로 두고 아래 코드를 재구성한다. 이제 테스트가 실패한다면 구현에 묶여 있는 것이다. 리팩터링마다 다시 써야 하는데도 버그는 하나도 잡지 못한다.
 
-Keep a test that catches the first edit and survives the second. Rewrite or delete the rest. To write a test that does both, drive the code through its users' interface with a concrete input. Derive the expected value from the requirement, not from a run of the code. Assert what the contract promises, no less and no more.
+첫 번째 편집을 잡고 두 번째를 견디는 테스트를 유지한다. 나머지는 다시 쓰거나 삭제한다. 둘 다 하는 테스트를 쓰려면, 구체적인 입력으로 사용자의 인터페이스를 통해 코드를 구동한다. 기대값은 코드를 실행한 결과가 아니라 요구사항에서 도출한다. 계약이 약속하는 것을 더도 덜도 말고 단언한다.
 
-The contract decides, not the shape of the assertion. When "an empty cart never charges" is the promise, an assertion that the payment client got no call is behavior. Pair it with a case where the charge happens, so that the test shows it can see a call. The payload that a mocked external service receives is behavior, because that service observes it. A call to an internal helper is implementation, because no user can see it. An empty list is the exact answer when no record matches, and a hollow check when the test only needs some result. An exact error message pins wording that no caller reads. The error type that callers branch on is the contract.
+판단하는 것은 단언의 모양이 아니라 계약이다. "빈 장바구니는 절대 결제되지 않는다"가 약속이라면, 결제 클라이언트가 호출을 받지 않았다는 단언은 동작이다. 결제가 실제로 일어나는 케이스와 짝지어, 테스트가 호출을 볼 수 있음을 보여 준다. 모킹한 외부 서비스가 받는 페이로드는 그 서비스가 관찰하므로 동작이다. 내부 헬퍼 호출은 어떤 사용자도 볼 수 없으므로 구현이다. 빈 리스트는 일치하는 레코드가 없을 때는 정확한 답이고, 테스트가 아무 결과나 있으면 될 때는 속이 빈 검사다. 정확한 오류 메시지는 어떤 호출자도 읽지 않는 문구를 고정한다. 호출자가 분기하는 오류 타입이 계약이다.
 
-A test can pin an invariant instead of a call, such as a key that must exist in two tables or a compile-time type check. The invariant is the behavior.
+테스트는 호출 대신 불변식을 고정할 수 있다. 두 테이블에 반드시 존재해야 하는 키나 컴파일 타임 타입 검사가 그렇다. 그 불변식이 동작이다.
