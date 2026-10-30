@@ -25,7 +25,7 @@ If a candidate produces no output, proceed with N-1 and note the dropout.
 
 ## Phase C: Cross-judge
 
-After all Phase B candidates complete, spawn one judge subagent with `subagent_type: "Explore"` and `model: "opus"` with `effort: "xhigh"`. Its brief says "do not edit files". If the `Agent` tool rejects the model, skip the judge, pick the base alone in Phase D, and say so. The judge sees the rubric and the candidates by path label, scores each criterion, and recommends a base with rationale. It runs in parallel with your reading in Phase D. Don't spawn it while candidates are still writing.
+After all Phase B candidates complete, spawn one judge subagent with `subagent_type: "Explore"` and `model: "opus"` with `effort: "xhigh"`, or `model: "sonnet"` when the parent ran on opus. Its brief says "do not edit files". If the `Agent` tool rejects the model, skip the judge, pick the base alone in Phase D, and say so. The judge sees the rubric and the candidates by path label, scores each criterion, and recommends a base with rationale. It runs in parallel with your reading in Phase D. Don't spawn it while candidates are still writing.
 
 ## Phase D: Pick a base
 
