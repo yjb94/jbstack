@@ -127,7 +127,11 @@ function mkPrRepo(push = true) {
   if (push) git(r, 'push', '-q', '-u', 'origin', 'HEAD');
   return r;
 }
-const verdict = (r, result, inconclusive = []) => writeVerdict({ cwd: r, result, inconclusive, criteria: 'c.md' });
+const verdict = (r, result, inconclusive = []) => {
+  const criteria = path.join(tmp, `${path.basename(r)}-criteria.md`);
+  fs.writeFileSync(criteria, '- c\n');
+  return writeVerdict({ cwd: r, result, inconclusive, criteria });
+};
 const pr = (r) => decide({ command: 'gh pr create --fill', cwd: r });
 
 test('pr create without upstream is blocked', () => {

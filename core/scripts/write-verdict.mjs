@@ -10,6 +10,7 @@ export const verdictPath = (cwd) => path.join(git(cwd, 'rev-parse', '--absolute-
 
 export function writeVerdict({ cwd, result, inconclusive, criteria }) {
   if (result !== 'PASS' && result !== 'FAIL') throw new Error('--result must be PASS or FAIL');
+  if (!fs.existsSync(criteria)) throw new Error(`criteria file not found: ${criteria}`);
   if (git(cwd, 'status', '--porcelain')) throw new Error('working tree is dirty: commit or stash before writing a verdict');
   const file = verdictPath(cwd);
   fs.mkdirSync(path.dirname(file), { recursive: true });
