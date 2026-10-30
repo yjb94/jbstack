@@ -1,6 +1,6 @@
 ### Opening a PR
 
-Invoked at the end of every other playbook.
+Invoked at the end of every other playbook. Where the repo sets branch names, a base branch, or a commit or PR format, use its values over the defaults here.
 
 **Worktree.** Work from a git worktree off main. Subagents inherit it. Multiple `Agent` calls on the same branch each get their own worktree, or `git fetch && git reset --hard origin/<branch>` between them. Dirty branch with unrelated work: patch out, fresh worktree, apply. Snarled worktree: reset from main, redo minimally. When you work in a worktree, the report names its path, how to run the app from it, and what to check.
 
