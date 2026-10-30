@@ -6,7 +6,7 @@ Invoked at the end of every other playbook. Where the repo sets branch names, a 
 
 **Commits.** Commit liberally. Rebase into small, ordered commits before opening PRs. Each commit is a future PR: landable, ordered to tell the story. Amend when the fix belongs in a just-made commit. New commit when separable. Commit bodies don't restate the subject.
 
-**Critic.** Run the jb-mode `jbstack:critic` trigger right before `gh pr create`. At trust level 1, stop at local commits and report instead of pushing or opening a PR. The critic runs before that report.
+**Critic.** Run the jb-mode `jbstack:critic` trigger right before `gh pr create`. At trust level 1, stop at local commits and report instead of pushing or opening a PR. The critic runs before that report. List each 미확정 row from the critic's table in the report and under a `## Human check` heading in the PR body. When the same gap comes up a second time, widen the verification surface with `maintain-verification-skill`.
 
 **PRs.** Run `/deslop` over the diff before commit and `/no-comments` before review. Write every PR title, description, and commit body with `/technical-writing` (every layer except Diátaxis, and apply the STE vocabulary rules: one word per action, keep articles, a plain verb over `-ing` where one works), then apply `/unslop`.
 
