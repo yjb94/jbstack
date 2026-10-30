@@ -77,6 +77,7 @@ export function decideFileWrite({ filePath }) {
 const GIT_OP = /\bgit((?:\s+(?:-[Cc]\s+\S+|--(?:git-dir|work-tree|namespace)\s+\S+|-\S+))*)\s+(commit|push)\b/g;
 
 export function decide({ command, cwd }) {
+  // ponytail: blocks any command that mentions the file (grep, commit messages); accepted false positive. Read and Grep tools are unaffected.
   if (command.includes('jb.local.json')) return protect();
   const ops = [...command.matchAll(GIT_OP)].map((m) => ({
     what: `git ${m[2]}`,
