@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { verdictPath } from '../scripts/write-verdict.mjs';
 
 const unquote = (s) => s.replace(/^(['"])(.*)\1$/, '$2');
 
@@ -42,6 +43,26 @@ export function trustLevel(repoTop) {
   }
 }
 
+// ponytail: the verdict file is not signed; an agent could forge it. The hook catches staleness, not fraud.
+export function checkVerdict(repoTop) {
+  const no = (reason) => ({ ok: false, reason: `jbstack verdict: ${reason}` });
+  let upstream;
+  try {
+    upstream = execFileSync('git', ['rev-parse', '@{upstream}^{tree}'], { cwd: repoTop, stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim();
+  } catch {
+    return no('no upstream branch to compare against; push first (git push -u origin HEAD), then run the critic.');
+  }
+  let v;
+  try {
+    v = JSON.parse(fs.readFileSync(verdictPath(repoTop), 'utf8'));
+  } catch {
+    return no('no verdict found; run the critic on the pushed commit, then retry gh pr create.');
+  }
+  if (v.result !== 'PASS') return no('last verdict is FAIL; fix the findings, push, and run the critic again.');
+  if (v.tree !== upstream) return no('verdict is stale (it covers a different tree than the pushed branch); run the critic again on the pushed commit.');
+  return { ok: true };
+}
+
 export function decide({ command, cwd }) {
   const commit = /\bgit\s+(?:-C\s+\S+\s+)?commit\b/.test(command);
   const push = /\bgit\s+(?:-C\s+\S+\s+)?push\b/.test(command);
@@ -57,7 +78,10 @@ export function decide({ command, cwd }) {
   if (commit && level < 1) return block('git commit', 1);
   if (push && level < 2) return block('git push', 2);
   if (pr && level < 2) return block('gh pr create', 2);
-  // Task 7: at level 2, gh pr create must also pass checkVerdict(repo) here
+  if (pr) {
+    const v = checkVerdict(repo);
+    if (!v.ok) return { allow: false, reason: v.reason };
+  }
   return { allow: true };
 }
 

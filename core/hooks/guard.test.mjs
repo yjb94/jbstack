@@ -6,6 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { decide } from './guard.mjs';
+import { writeVerdict } from '../scripts/write-verdict.mjs';
 
 const GUARD = fileURLToPath(new URL('./guard.mjs', import.meta.url));
 const tmp = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'jb-guard-')));
@@ -43,7 +44,7 @@ test('level 0 blocks commit', () => {
 test('level 2 allows push', () => {
   const r = mkRepo(2);
   assert.equal(decide({ command: 'git push origin main', cwd: r }).allow, true);
-  assert.equal(decide({ command: 'gh pr create --fill', cwd: r }).allow, true);
+  assert.equal(decide({ command: 'gh pr create --fill', cwd: r }).allow, false); // verdict gate, see below
 });
 
 test('blocks chained push at level 1', () => {
@@ -115,4 +116,60 @@ test('cd ~/ and $HOME/ targets are expanded; missing target falls back to cwd', 
   } finally {
     process.env.HOME = saved;
   }
+});
+
+// level-2 repo with one commit; pushed unless `push === false`
+function mkPrRepo(push = true) {
+  const r = mkRepo(2);
+  fs.writeFileSync(path.join(r, '.gitignore'), '.claude/\n');
+  git(r, 'add', '.gitignore');
+  git(r, '-c', 'user.name=t', '-c', 'user.email=t@t', 'commit', '-q', '-m', 'init');
+  if (push) git(r, 'push', '-q', '-u', 'origin', 'HEAD');
+  return r;
+}
+const verdict = (r, result, inconclusive = []) => writeVerdict({ cwd: r, result, inconclusive, criteria: 'c.md' });
+const pr = (r) => decide({ command: 'gh pr create --fill', cwd: r });
+
+test('pr create without upstream is blocked', () => {
+  const d = pr(mkPrRepo(false));
+  assert.equal(d.allow, false);
+  assert.match(d.reason, /push first/);
+});
+
+test('pr create without verdict is blocked', () => {
+  const d = pr(mkPrRepo());
+  assert.equal(d.allow, false);
+  assert.match(d.reason, /critic/);
+});
+
+test('FAIL verdict is blocked', () => {
+  const r = mkPrRepo();
+  verdict(r, 'FAIL');
+  const d = pr(r);
+  assert.equal(d.allow, false);
+  assert.match(d.reason, /FAIL/);
+});
+
+test('stale verdict is blocked', () => {
+  const r = mkPrRepo();
+  verdict(r, 'PASS');
+  fs.writeFileSync(path.join(r, 'f'), 'x');
+  git(r, 'add', 'f');
+  git(r, '-c', 'user.name=t', '-c', 'user.email=t@t', 'commit', '-q', '-m', 'more');
+  git(r, 'push', '-q');
+  const d = pr(r);
+  assert.equal(d.allow, false);
+  assert.match(d.reason, /stale/);
+});
+
+test('PASS verdict matching upstream tree is allowed', () => {
+  const r = mkPrRepo();
+  verdict(r, 'PASS');
+  assert.equal(pr(r).allow, true);
+});
+
+test('inconclusive items do not block a PASS', () => {
+  const r = mkPrRepo();
+  verdict(r, 'PASS', ['could not run e2e']);
+  assert.equal(pr(r).allow, true);
 });
