@@ -20,11 +20,9 @@ function topOf(dir) {
 
 const expand = (d) => d.replace(/^(?:~|\$HOME|\$\{HOME\})(?=\/|$)/, os.homedir());
 
-// first `git -C <dir>`, then a leading `cd <dir> &&`, then cwd
-export function targetRepo(command, cwd) {
-  const c = command.match(/\bgit\s+-C\s+(\S+)/);
-  const cd = command.match(/^\s*cd\s+(\S+)\s*&&/);
-  const raw = c ? c[1] : cd ? cd[1] : null;
+// the operation's own `git -C <dir>`, then a leading `cd <dir> &&`, then cwd
+export function targetRepo(command, cwd, dashC) {
+  const raw = dashC ?? command.match(/^\s*cd\s+(\S+)\s*&&/)?.[1];
   if (raw) {
     const dir = path.resolve(cwd, expand(unquote(raw)));
     // an existing non-repo dir is outside git; a missing dir falls back to cwd rather than slipping through
@@ -75,25 +73,30 @@ export function decideFileWrite({ filePath }) {
   return typeof filePath === 'string' && TRUST_FILE.test(path.normalize(filePath)) ? protect() : { allow: true };
 }
 
+// `git [global options] commit|push`; group 1 holds the options, so a -C elsewhere on the line is not this command's
+const GIT_OP = /\bgit((?:\s+(?:-[Cc]\s+\S+|--(?:git-dir|work-tree|namespace)\s+\S+|-\S+))*)\s+(commit|push)\b/g;
+
 export function decide({ command, cwd }) {
   if (command.includes('jb.local.json')) return protect();
-  const commit = /\bgit\s+(?:-C\s+\S+\s+)?commit\b/.test(command);
-  const push = /\bgit\s+(?:-C\s+\S+\s+)?push\b/.test(command);
-  const pr = /\bgh\s+pr\s+create\b/.test(command);
-  if (!commit && !push && !pr) return { allow: true };
-  const repo = targetRepo(command, cwd);
-  if (!repo) return { allow: true };
-  const level = trustLevel(repo);
-  const block = (what, need) => ({
-    allow: false,
-    reason: `jbstack trust: ${what} is blocked in ${repo} at trust level ${level} (needs level ${need}+). ${OWNER_ONLY}`,
-  });
-  if (commit && level < 1) return block('git commit', 1);
-  if (push && level < 2) return block('git push', 2);
-  if (pr && level < 2) return block('gh pr create', 2);
-  if (pr) {
-    const v = checkVerdict(repo);
-    if (!v.ok) return { allow: false, reason: v.reason };
+  const ops = [...command.matchAll(GIT_OP)].map((m) => ({
+    what: `git ${m[2]}`,
+    need: m[2] === 'commit' ? 1 : 2,
+    dashC: m[1].match(/(?:^|\s)-C\s+(\S+)/)?.[1],
+  }));
+  if (/\bgh\s+pr\s+(?:create|new)\b/.test(command)) ops.push({ what: 'gh pr create', need: 2, pr: true });
+  for (const op of ops) {
+    const repo = targetRepo(command, cwd, op.dashC);
+    if (!repo) continue;
+    const level = trustLevel(repo);
+    if (level < op.need)
+      return {
+        allow: false,
+        reason: `jbstack trust: ${op.what} is blocked in ${repo} at trust level ${level} (needs level ${op.need}+). ${OWNER_ONLY}`,
+      };
+    if (op.pr) {
+      const v = checkVerdict(repo);
+      if (!v.ok) return { allow: false, reason: v.reason };
+    }
   }
   return { allow: true };
 }

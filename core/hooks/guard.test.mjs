@@ -248,3 +248,23 @@ test("worktree inherits the main checkout's level", () => {
     assert.equal(decide({ command: 'git commit -m x', cwd: wt }).allow, commitAllowed, `level ${trust} commit`);
   }
 });
+
+test('-C is taken only from the commit/push command itself', () => {
+  const one = mkRepo(1);
+  const two = mkRepo(2);
+  assert.equal(decide({ command: `git -C ${two} status && git push`, cwd: one }).allow, false);
+  assert.equal(decide({ command: `git -C ${two} -c k=v push`, cwd: one }).allow, true);
+});
+
+test('git global options before the subcommand are seen through', () => {
+  const zero = mkRepo(0);
+  const one = mkRepo(1);
+  for (const command of ['git -c k=v push', 'git --no-pager push', 'git -c a=b --no-pager push origin main'])
+    assert.equal(decide({ command, cwd: one }).allow, false, command);
+  assert.equal(decide({ command: 'git -c user.name=x commit -m y', cwd: zero }).allow, false);
+});
+
+test('gh pr new is gated like gh pr create', () => {
+  assert.equal(decide({ command: 'gh pr new --fill', cwd: mkRepo(1) }).allow, false);
+  assert.equal(decide({ command: 'gh pr new --fill', cwd: mkPrRepo() }).allow, false); // no verdict
+});
