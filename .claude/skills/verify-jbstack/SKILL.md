@@ -33,7 +33,7 @@ node --test tests/check-skills.test.mjs tests/import-pstack.test.mjs core/script
 
 ## Evidence
 
-레포 루트 `logs/verify-jbstack/<YYYYMMDD-HHMMSS>/`에 둔다(gitignore 대상이 아니므로 커밋에 섞이지 않게 `git add`에서 뺀다). `doctor.txt`(check-skills 출력과 exit), `tests.txt`(node --test 전체 출력), 문서 기준은 `grep -n` 출력을 `docs.txt`에 남긴다. 증명 기준은 "exit 0과 fail 0, 그리고 기준이 말한 문장이 줄 번호와 함께 있다"이다.
+레포 루트 `logs/verify-jbstack/<YYYYMMDD-HHMMSS>/`에 둔다(`logs/`는 gitignore 대상). `doctor.txt`(check-skills 출력과 exit), `tests.txt`(node --test 전체 출력), 문서 기준은 `grep -n` 출력을 `docs.txt`에 남긴다. 증명 기준은 "exit 0과 fail 0, 그리고 기준이 말한 문장이 줄 번호와 함께 있다"이다.
 
 ## Cleanup
 
