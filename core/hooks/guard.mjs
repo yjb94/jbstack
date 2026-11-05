@@ -64,6 +64,22 @@ export function checkVerdict(repoTop) {
   return { ok: true };
 }
 
+// the opening-a-pr playbook's always-present sections; the body is the command text plus its --body-file
+const PR_HEADINGS = ['## 이유', '## 작업 범위'];
+export function checkPrBody(command, dirs) {
+  let text = command;
+  const file = command.match(/(?:--body-file|-F)(?:=|\s+)("[^"]+"|'[^']+'|\S+)/)?.[1];
+  for (const dir of file ? dirs : []) {
+    try {
+      text += fs.readFileSync(path.resolve(dir, expand(unquote(file))), 'utf8');
+      break;
+    } catch {}
+  }
+  const missing = PR_HEADINGS.filter((h) => !text.includes(h));
+  if (!missing.length) return { ok: true };
+  return { ok: false, reason: `jbstack pr body: the PR body has no ${missing.join(' or ')} section. Read skills/jb-mode/playbooks/opening-a-pr.md, write the body in that format, then retry gh pr create.` };
+}
+
 const TRUST_FILE = /(^|[\\/])\.claude[\\/]jb\.local\.json$/;
 const OWNER_ONLY = 'The trust level is set by the repo owner. Report instead of retrying.';
 const protect = () => ({ allow: false, reason: `jbstack trust: the trust configuration is not yours to change. ${OWNER_ONLY}` });
@@ -97,6 +113,8 @@ export function decide({ command, cwd }) {
     if (op.pr) {
       const v = checkVerdict(repo);
       if (!v.ok) return { allow: false, reason: v.reason };
+      const b = checkPrBody(command, [cwd, repo]);
+      if (!b.ok) return { allow: false, reason: b.reason };
     }
   }
   return { allow: true };
