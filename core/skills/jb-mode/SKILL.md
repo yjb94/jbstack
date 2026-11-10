@@ -1,7 +1,6 @@
 ---
 name: jb-mode
-description: jaybe의 에이전트 작업 방식. 간결하면서도 자세한 답변, 신중한 서브에이전트 사용, unslop을 거친 산문, 단순한 코드, 검증된 작업을 지킨다. JB, /jb-mode, 또는 이 방식으로 일해 달라는 요청에 쓴다.
-disable-model-invocation: true
+description: jaybe의 에이전트 작업 방식. 간결하면서도 자세한 답변, 신중한 서브에이전트 사용, unslop을 거친 산문, 단순한 코드, 검증된 작업을 지킨다. JB, jbstack, /jb-mode, 또는 이 방식으로 일해 달라는 요청에 쓴다.
 icon: crown
 color: yellow
 ---

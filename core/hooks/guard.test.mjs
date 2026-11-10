@@ -132,7 +132,8 @@ const verdict = (r, result, inconclusive = []) => {
   fs.writeFileSync(criteria, '- c\n');
   return writeVerdict({ cwd: r, result, inconclusive, criteria });
 };
-const pr = (r) => decide({ command: 'gh pr create --fill', cwd: r });
+const BODY = '## 이유\n\nwhy\n\n## 작업 범위\n\n- scope\n';
+const pr = (r) => decide({ command: `gh pr create --title t --body "${BODY}"`, cwd: r });
 
 test('pr create without upstream is blocked', () => {
   const d = pr(mkPrRepo(false));
@@ -170,6 +171,29 @@ test('PASS verdict matching upstream tree is allowed', () => {
   const r = mkPrRepo();
   verdict(r, 'PASS');
   assert.equal(pr(r).allow, true);
+});
+
+test('PASS verdict without the playbook body is blocked', () => {
+  const r = mkPrRepo();
+  verdict(r, 'PASS');
+  for (const command of ['gh pr create --fill', 'gh pr create --title t --body "## Summary\n\n- x"', 'gh pr create --title t --body "## 이유\n\nwhy"']) {
+    const d = decide({ command, cwd: r });
+    assert.equal(d.allow, false, command);
+    assert.match(d.reason, /opening-a-pr\.md/, command);
+  }
+});
+
+test('playbook body in --body-file is read from disk', () => {
+  const r = mkPrRepo();
+  verdict(r, 'PASS');
+  const good = path.join(tmp, `${path.basename(r)}-body.md`);
+  const bad = path.join(tmp, `${path.basename(r)}-bad.md`);
+  fs.writeFileSync(good, BODY);
+  fs.writeFileSync(bad, '## Summary\n');
+  assert.equal(decide({ command: `gh pr create --title t --body-file ${good}`, cwd: r }).allow, true);
+  assert.equal(decide({ command: `gh pr create --title t -F "${good}"`, cwd: r }).allow, true);
+  assert.equal(decide({ command: `gh pr create --title t --body-file ${bad}`, cwd: r }).allow, false);
+  assert.equal(decide({ command: 'gh pr create --title t --body-file missing.md', cwd: r }).allow, false);
 });
 
 test('inconclusive items do not block a PASS', () => {
