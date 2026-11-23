@@ -137,6 +137,9 @@ export function readOnlyBash(command) {
     } else if (c === ';') {
       nextStage();
       i++;
+    } else if (c === '<' && !/[<>&(]/.test(command[i + 1] ?? '')) {
+      // input redirect only reads; heredocs, <>, <&, and <( ) fall through to the deny below
+      i++;
     } else if (/[\\`$#\n<>&(){}]/.test(c)) {
       return false;
     } else {
@@ -145,6 +148,8 @@ export function readOnlyBash(command) {
     }
   }
   endWord();
+  // a trailing ; leaves an empty last stage; drop it, but an empty stage anywhere else still fails closed
+  if (stages.length > 1 && stages.at(-1).length === 0) stages.pop();
   return stages.every((words) => words.length > 0 && READ_ONLY_CMDS.has(words[0]));
 }
 

@@ -287,6 +287,10 @@ test('bash read of jb.local.json is allowed', () => {
     'cat .claude/jb.local.json 2>/dev/null; echo done',
     'cat .claude/jb.local.json 2>&1; jq .trust .claude/jb.local.json',
     'jq .trust .claude/jb.local.json 2>/dev/null&&echo ok',
+    'cat .claude/jb.local.json;',
+    'cat .claude/jb.local.json 2>/dev/null;',
+    'cat < .claude/jb.local.json',
+    'jq . < .claude/jb.local.json',
   ]) {
     assert.equal(decide({ command, cwd: r }).allow, true, command);
   }
