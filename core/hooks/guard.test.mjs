@@ -246,6 +246,8 @@ test('bash write to jb.local.json is blocked', () => {
     'cat .claude/jb.local.json && rm .claude/jb.local.json',
     'cat $(echo .claude/jb.local.json)',
     'cat .claude/jb.local.json | xargs rm',
+    `cat a\\'b > .claude/jb.local.json c'd'`,
+    `cat a\\"b > .claude/jb.local.json c"d"`,
     '/usr/bin/sed -i s/1/2/ .claude/jb.local.json',
     'cat .claude/jb.local.json | /usr/bin/tee /tmp/x',
   ]) {

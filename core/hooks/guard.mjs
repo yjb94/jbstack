@@ -93,6 +93,8 @@ export function decideFileWrite({ filePath }) {
 // output redirect. Anything else is denied, so a write form nobody listed still fails closed.
 const READ_ONLY_CMDS = new Set(['cat', 'head', 'tail', 'jq', 'grep', 'wc', 'stat']);
 export function readOnlyBash(command) {
+  // an escape can open or close a quote in ways this scan cannot follow, so any backslash fails closed
+  if (command.includes('\\')) return false;
   // quoted text is data, not shell syntax: '.trust > 1' is a jq filter, not a redirect
   let s = command.replace(/'[^']*'|"[^"]*"/g, "''");
   if (/`|\$\(|<\(|>\(/.test(s)) return false; // command or process substitution
