@@ -241,6 +241,13 @@ test('bash write to jb.local.json is blocked', () => {
     'rsync /tmp/x .claude/jb.local.json',
     'echo x | sponge .claude/jb.local.json',
     'gsed -i s/1/2/ .claude/jb.local.json',
+    '/bin/rm .claude/jb.local.json',
+    '\\rm .claude/jb.local.json',
+    'cat .claude/jb.local.json && rm .claude/jb.local.json',
+    'cat $(echo .claude/jb.local.json)',
+    'cat .claude/jb.local.json | xargs rm',
+    '/usr/bin/sed -i s/1/2/ .claude/jb.local.json',
+    'cat .claude/jb.local.json | /usr/bin/tee /tmp/x',
   ]) {
     const d = decide({ command, cwd: r });
     assert.equal(d.allow, false, command);
@@ -255,9 +262,14 @@ test('bash read of jb.local.json is allowed', () => {
     'jq .trust .claude/jb.local.json',
     `grep trust ${r}/.claude/jb.local.json 2>/dev/null`,
     'cat .claude/jb.local.json 2>&1',
+    'cat .claude/jb.local.json 2> /dev/null',
     'jq .trust ~/work/install-kit/.claude/jb.local.json',
     'grep trust /Users/me/cp-site/.claude/jb.local.json',
     'cat /Users/me/projects/dd-trace/.claude/jb.local.json',
+    `jq '.trust > 1' ${r}/.claude/jb.local.json`,
+    'grep -c install .claude/jb.local.json',
+    'cat .claude/jb.local.json | grep -v rm',
+    'cat .claude/jb.local.json | jq .',
   ]) {
     assert.equal(decide({ command, cwd: r }).allow, true, command);
   }
