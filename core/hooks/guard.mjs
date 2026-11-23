@@ -91,13 +91,61 @@ export function decideFileWrite({ filePath }) {
 
 // A Bash command that names the trust file passes only if it is a pipeline of read-only tools with no
 // output redirect. Anything else is denied, so a write form nobody listed still fails closed.
-const READ_ONLY_CMDS = new Set(['cat', 'head', 'tail', 'jq', 'grep', 'wc', 'stat']);
+const READ_ONLY_CMDS = new Set(['cat', 'head', 'tail', 'jq', 'grep', 'wc', 'stat', 'echo', 'cd']);
+// Tokenizes just enough shell to see command words. Single quotes are literal. Double quotes may hold plain text only.
+// Anything that could run code or redirect output outside quotes makes the whole command fail closed.
 export function readOnlyBash(command) {
-  // Quotes, comments, escapes and substitutions hide shell syntax from a regex scan, so none is allowed at all.
-  // What remains is plain words joined by pipes, which can only read.
-  const plain = command.replace(/\s*2>\s*(?:\/dev\/null|&1)(?=[\s|]|$)/g, ''); // stderr-only redirects
-  if (/[\\'"`$()<>&;#\n]/.test(plain)) return false;
-  return plain.split('|').every((seg) => READ_ONLY_CMDS.has(seg.trim().split(/\s+/)[0]));
+  const stages = [[]];
+  let word = null;
+  const endWord = () => {
+    if (word !== null) stages.at(-1).push(word);
+    word = null;
+  };
+  const nextStage = () => {
+    endWord();
+    stages.push([]);
+  };
+  let i = 0;
+  while (i < command.length) {
+    const c = command[i];
+    if (c === "'") {
+      const close = command.indexOf("'", i + 1);
+      if (close < 0) return false;
+      word = (word ?? '') + command.slice(i + 1, close);
+      i = close + 1;
+    } else if (c === '"') {
+      const close = command.indexOf('"', i + 1);
+      if (close < 0) return false;
+      const body = command.slice(i + 1, close);
+      if (/[\\`$]/.test(body)) return false;
+      word = (word ?? '') + body;
+      i = close + 1;
+    } else if (c === ' ' || c === '\t') {
+      endWord();
+      i++;
+    } else if (c === '2' && word === null && command[i + 1] === '>') {
+      // stderr to /dev/null or to stdout is not a write to the file
+      const m = command.slice(i + 1).match(/^>\s*(?:\/dev\/null|&1)(?=[\s|&]|$)/);
+      if (!m) return false;
+      i += 1 + m[0].length;
+    } else if (c === '|') {
+      nextStage();
+      i += command[i + 1] === '|' ? 2 : 1;
+    } else if (c === '&' && command[i + 1] === '&') {
+      nextStage();
+      i += 2;
+    } else if (c === ';') {
+      nextStage();
+      i++;
+    } else if (/[\\`$#\n<>&(){}]/.test(c)) {
+      return false;
+    } else {
+      word = (word ?? '') + c;
+      i++;
+    }
+  }
+  endWord();
+  return stages.every((words) => words.length > 0 && READ_ONLY_CMDS.has(words[0]));
 }
 
 // `git [global options] commit|push`; group 1 holds the options, so a -C elsewhere on the line is not this command's

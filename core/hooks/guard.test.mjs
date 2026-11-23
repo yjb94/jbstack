@@ -278,6 +278,12 @@ test('bash read of jb.local.json is allowed', () => {
     'grep -c install .claude/jb.local.json',
     'cat .claude/jb.local.json | grep -v rm',
     'cat .claude/jb.local.json | jq .',
+    `jq '.trust > 1' ${r}/.claude/jb.local.json`,
+    `jq ".trust" ${r}/.claude/jb.local.json`,
+    `cat ".claude/jb.local.json"`,
+    `cd ${r} && cat .claude/jb.local.json`,
+    'cat .claude/jb.local.json 2>/dev/null || echo none',
+    'cat .claude/jb.local.json; echo done',
   ]) {
     assert.equal(decide({ command, cwd: r }).allow, true, command);
   }
