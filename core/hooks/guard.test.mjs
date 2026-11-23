@@ -223,12 +223,33 @@ test('block reason does not reveal how to raise trust', () => {
   assert.doesNotMatch(d.reason, /jb\.local|\.claude|"trust"|\{/);
 });
 
-test('bash command touching jb.local.json is blocked', () => {
+test('bash write to jb.local.json is blocked', () => {
   const r = mkRepo(1);
-  for (const command of [`echo '{"trust":2}' > ${r}/.claude/jb.local.json`, 'sed -i s/1/2/ .claude/jb.local.json', 'cat .claude/jb.local.json']) {
+  for (const command of [
+    `echo '{"trust":2}' > ${r}/.claude/jb.local.json`,
+    `echo '{"trust":2}' >> .claude/jb.local.json`,
+    'sed -i s/1/2/ .claude/jb.local.json',
+    'perl -pi -e s/1/2/ .claude/jb.local.json',
+    `echo '{"trust":2}' | tee .claude/jb.local.json`,
+    'cp /tmp/x .claude/jb.local.json',
+    'mv .claude/jb.local.json /tmp/x',
+    'rm .claude/jb.local.json',
+  ]) {
     const d = decide({ command, cwd: r });
     assert.equal(d.allow, false, command);
     assert.doesNotMatch(d.reason, /\{/);
+  }
+});
+
+test('bash read of jb.local.json is allowed', () => {
+  const r = mkRepo(1);
+  for (const command of [
+    'cat .claude/jb.local.json',
+    'jq .trust .claude/jb.local.json',
+    `grep trust ${r}/.claude/jb.local.json 2>/dev/null`,
+    'cat .claude/jb.local.json 2>&1',
+  ]) {
+    assert.equal(decide({ command, cwd: r }).allow, true, command);
   }
 });
 

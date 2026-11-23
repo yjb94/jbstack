@@ -89,12 +89,15 @@ export function decideFileWrite({ filePath }) {
   return typeof filePath === 'string' && TRUST_FILE.test(path.normalize(filePath)) ? protect() : { allow: true };
 }
 
+// shell forms that change a file: redirects (not 2>/dev/null or 2>&1), tee, in-place sed/perl, and file-moving or -removing tools
+const WRITE_LIKE = /(^|[^0-9&])>|\btee\b|\b(sed|perl)\b.*\s-\w*i|--in-place|\b(mv|cp|rm|unlink|truncate|dd|chmod|ln|install|shred)\b/;
+
 // `git [global options] commit|push`; group 1 holds the options, so a -C elsewhere on the line is not this command's
 const GIT_OP = /\bgit((?:\s+(?:-[Cc]\s+\S+|--(?:git-dir|work-tree|namespace)\s+\S+|-\S+))*)\s+(commit|push)\b/g;
 
 export function decide({ command, cwd }) {
-  // ponytail: blocks any command that mentions the file (grep, commit messages); accepted false positive. Read and Grep tools are unaffected.
-  if (command.includes('jb.local.json')) return protect();
+  // ponytail: a command that mentions the file and looks like a write is blocked; reads (cat, jq, grep) pass. Seatbelt: node -e or python can still write it.
+  if (command.includes('jb.local.json') && WRITE_LIKE.test(command)) return protect();
   const ops = [...command.matchAll(GIT_OP)].map((m) => ({
     what: `git ${m[2]}`,
     need: m[2] === 'commit' ? 1 : 2,
