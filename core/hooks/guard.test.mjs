@@ -252,6 +252,9 @@ test('bash write to jb.local.json is blocked', () => {
     'cat "`rm .claude/jb.local.json`"',
     `cat "$(echo '{"trust":2}' > .claude/jb.local.json)"`,
     'cat .claude/jb.local.json "$(cp /tmp/x .claude/jb.local.json)"',
+    'cat ".claude/jb.local.json #"\necho x > .claude/jb.local.json\n#"',
+    "cat '.claude/jb.local.json #'\ncat /dev/null > .claude/jb.local.json\n#'",
+    'cat .claude/jb.local.json; rm .claude/jb.local.json',
     '/usr/bin/sed -i s/1/2/ .claude/jb.local.json',
     'cat .claude/jb.local.json | /usr/bin/tee /tmp/x',
   ]) {
@@ -272,7 +275,6 @@ test('bash read of jb.local.json is allowed', () => {
     'jq .trust ~/work/install-kit/.claude/jb.local.json',
     'grep trust /Users/me/cp-site/.claude/jb.local.json',
     'cat /Users/me/projects/dd-trace/.claude/jb.local.json',
-    `jq '.trust > 1' ${r}/.claude/jb.local.json`,
     'grep -c install .claude/jb.local.json',
     'cat .claude/jb.local.json | grep -v rm',
     'cat .claude/jb.local.json | jq .',

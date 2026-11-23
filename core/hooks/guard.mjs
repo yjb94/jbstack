@@ -93,19 +93,11 @@ export function decideFileWrite({ filePath }) {
 // output redirect. Anything else is denied, so a write form nobody listed still fails closed.
 const READ_ONLY_CMDS = new Set(['cat', 'head', 'tail', 'jq', 'grep', 'wc', 'stat']);
 export function readOnlyBash(command) {
-  // an escape can open or close a quote in ways this scan cannot follow, so any backslash fails closed
-  if (command.includes('\\')) return false;
-  // substitution runs even inside double quotes, so check the raw command before quotes are stripped
-  if (/`|\$\(|<\(|>\(/.test(command)) return false;
-  // quoted text is data, not shell syntax: '.trust > 1' is a jq filter, not a redirect
-  let s = command.replace(/'[^']*'|"[^"]*"/g, "''");
-  s = s.replace(/2>\s*(?:\/dev\/null|&1)/g, ''); // stderr-only redirects
-  if (s.includes('>')) return false;
-  return s.split(/[|&;\n]/).every((seg) => {
-    const word = seg.trim().split(/\s+/)[0];
-    if (!word) return true; // empty piece from && or ||
-    return READ_ONLY_CMDS.has(word.replace(/^\\/, '').split('/').pop());
-  });
+  // Quotes, comments, escapes and substitutions hide shell syntax from a regex scan, so none is allowed at all.
+  // What remains is plain words joined by pipes, which can only read.
+  const plain = command.replace(/\s*2>\s*(?:\/dev\/null|&1)(?=[\s|]|$)/g, ''); // stderr-only redirects
+  if (/[\\'"`$()<>&;#\n]/.test(plain)) return false;
+  return plain.split('|').every((seg) => READ_ONLY_CMDS.has(seg.trim().split(/\s+/)[0]));
 }
 
 // `git [global options] commit|push`; group 1 holds the options, so a -C elsewhere on the line is not this command's
