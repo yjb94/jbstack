@@ -248,6 +248,10 @@ test('bash write to jb.local.json is blocked', () => {
     'cat .claude/jb.local.json | xargs rm',
     `cat a\\'b > .claude/jb.local.json c'd'`,
     `cat a\\"b > .claude/jb.local.json c"d"`,
+    'cat "$(rm .claude/jb.local.json)"',
+    'cat "`rm .claude/jb.local.json`"',
+    `cat "$(echo '{"trust":2}' > .claude/jb.local.json)"`,
+    'cat .claude/jb.local.json "$(cp /tmp/x .claude/jb.local.json)"',
     '/usr/bin/sed -i s/1/2/ .claude/jb.local.json',
     'cat .claude/jb.local.json | /usr/bin/tee /tmp/x',
   ]) {

@@ -95,9 +95,10 @@ const READ_ONLY_CMDS = new Set(['cat', 'head', 'tail', 'jq', 'grep', 'wc', 'stat
 export function readOnlyBash(command) {
   // an escape can open or close a quote in ways this scan cannot follow, so any backslash fails closed
   if (command.includes('\\')) return false;
+  // substitution runs even inside double quotes, so check the raw command before quotes are stripped
+  if (/`|\$\(|<\(|>\(/.test(command)) return false;
   // quoted text is data, not shell syntax: '.trust > 1' is a jq filter, not a redirect
   let s = command.replace(/'[^']*'|"[^"]*"/g, "''");
-  if (/`|\$\(|<\(|>\(/.test(s)) return false; // command or process substitution
   s = s.replace(/2>\s*(?:\/dev\/null|&1)/g, ''); // stderr-only redirects
   if (s.includes('>')) return false;
   return s.split(/[|&;\n]/).every((seg) => {
