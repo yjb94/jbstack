@@ -125,7 +125,7 @@ export function readOnlyBash(command) {
       i++;
     } else if (c === '2' && word === null && command[i + 1] === '>') {
       // stderr to /dev/null or to stdout is not a write to the file
-      const m = command.slice(i + 1).match(/^>\s*(?:\/dev\/null|&1)(?=[\s|&]|$)/);
+      const m = command.slice(i + 1).match(/^>\s*(?:\/dev\/null|&1)(?=[\s|&;]|$)/);
       if (!m) return false;
       i += 1 + m[0].length;
     } else if (c === '|') {
